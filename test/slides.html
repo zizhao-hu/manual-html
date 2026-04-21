@@ -95,6 +95,37 @@ body.mh-manual-mode .mh-mode-badge { display: block; }
   display: none;
 }
 body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block; }
+
+.mh-hint {
+  position: fixed; bottom: 20px; right: 20px;
+  z-index: 10001; font: 13px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
+}
+.mh-hint > summary {
+  width: 36px; height: 36px;
+  background: #2563eb; color: #fff;
+  border-radius: 50%; display: grid; place-items: center;
+  cursor: pointer; font-weight: 700; font-size: 18px;
+  list-style: none; outline: none; user-select: none;
+  box-shadow: 0 6px 18px rgba(37,99,235,.35);
+}
+.mh-hint > summary::-webkit-details-marker { display: none; }
+.mh-hint > summary::marker { display: none; }
+.mh-hint[open] > summary { border-radius: 50% 50% 8px 50%; }
+.mh-hint-body {
+  position: absolute; bottom: 48px; right: 0;
+  background: #fff; padding: 14px 18px;
+  border-radius: 12px; border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 40px -16px rgba(0,0,0,.25);
+  width: 280px; color: #111;
+}
+.mh-hint-body strong { display: block; margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: #2563eb; }
+.mh-hint-body ul { margin: 0; padding-left: 18px; }
+.mh-hint-body li { margin: 5px 0; color: #374151; }
+.mh-hint-body kbd {
+  font: 600 11px/1 ui-monospace, Menlo, monospace;
+  padding: 2px 6px; background: #1f2937; color: #fff;
+  border-radius: 4px; margin: 0 1px;
+}
 /* ==== end ManualHTML boilerplate ==== */
 
 /* ==== Deck styles — widths are multiples of 60 so slides snap clean. ==== */
@@ -160,7 +191,7 @@ body { background: #f1ebdf; }
 
 <div class="mh-stage">
   <div class="mh-grid" aria-hidden="true"></div>
-  <div class="mh-mode-badge">Manual Mode — drag (snaps), corner = scale, ↑/↓ = depth, click text to edit</div>
+  <div class="mh-mode-badge">Manual Mode</div>
 
   <div class="deck-stack">
     <article class="mh-component slide title">
@@ -204,11 +235,26 @@ body { background: #f1ebdf; }
     <article class="mh-component slide">
       <p class="eyebrow">Visit us</p>
       <h2>114 Lamplight Ave. 7–4 daily.</h2>
-      <p>Press <strong>M</strong> to enter Manual Mode: drag slides onto the grid, scale them from the corner, change depth with <strong>↑</strong>/<strong>↓</strong>, and click any text to edit it in place. The slides adapt to whatever you type.</p>
+      <p>Open seven to four, every day of the week. Beans to take home, a bar to sit at, and one rotating single-origin brewed four ways.</p>
+      <p>We close for the farm trip the second week of March. The rest of the year, see you at the counter.</p>
       <p class="page-num">5 / 5</p>
     </article>
   </div>
 </div>
+
+<details class="mh-hint" aria-label="Shortcuts">
+  <summary>?</summary>
+  <div class="mh-hint-body">
+    <strong>Shortcuts</strong>
+    <ul>
+      <li><kbd>M</kbd> toggle Manual Mode</li>
+      <li>Drag to move — snaps to 60px grid</li>
+      <li>Corner handle to scale — snaps to grid</li>
+      <li><kbd>↑</kbd>/<kbd>↓</kbd> change depth of selected</li>
+      <li>Click text to edit in place</li>
+    </ul>
+  </div>
+</details>
 
 <script>
 /* ==== ManualHTML boilerplate (do not modify) ==== */
@@ -216,8 +262,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const GRID = 60;
   const Z_STEP = 20;
   const DRAG_THRESHOLD = 4;
-  const EDITABLE_SEL = 'h1,h2,h3,h4,h5,h6,p,span,a,li,blockquote,figcaption,dt,dd,th,td,strong,em';
   const snap = v => Math.round(v / GRID) * GRID;
+  const snapUp = v => Math.max(GRID, Math.ceil(v / GRID) * GRID);
 
   const stage = document.querySelector('.mh-stage');
   if (!stage) return;
@@ -246,12 +292,18 @@ document.addEventListener('DOMContentLoaded', function () {
     return { left: r.left - sr.left, top: r.top - sr.top, width: r.width };
   });
 
+  const snapHeight = el => {
+    el.style.minHeight = '';
+    el.style.minHeight = snapUp(el.offsetHeight) + 'px';
+  };
+
   comps.forEach((el, i) => {
     const r = rects[i];
     el.style.position = 'absolute';
     el.style.left = snap(r.left) + 'px';
     el.style.top  = snap(r.top)  + 'px';
     if (!el.style.width) el.style.width = r.width + 'px';
+    snapHeight(el);
     setS(el, getS(el));
     const h = document.createElement('div');
     h.className = 'mh-resize-handle';
@@ -272,16 +324,41 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   recomputeStageHeight();
   if (window.ResizeObserver) {
-    const ro = new ResizeObserver(recomputeStageHeight);
+    let scheduled = false;
+    const ro = new ResizeObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => {
+        scheduled = false;
+        comps.forEach(snapHeight);
+        recomputeStageHeight();
+      });
+    });
     comps.forEach(el => ro.observe(el));
   }
 
-  const editables = comps.flatMap(c => Array.from(c.querySelectorAll(EDITABLE_SEL)));
+  const isMhHelper = el => el.classList && (
+    el.classList.contains('mh-resize-handle') ||
+    el.classList.contains('mh-depth-readout')
+  );
+  const walkEditables = (root, cb) => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
+      acceptNode(el) {
+        if (isMhHelper(el)) return NodeFilter.FILTER_REJECT;
+        for (const n of el.childNodes) {
+          if (n.nodeType === 3 && n.textContent.trim()) return NodeFilter.FILTER_ACCEPT;
+        }
+        return NodeFilter.FILTER_SKIP;
+      },
+    });
+    let n;
+    while ((n = walker.nextNode())) cb(n);
+  };
   const setEditable = on => {
-    editables.forEach(el => {
+    comps.forEach(c => walkEditables(c, el => {
       if (on) el.setAttribute('contenteditable', 'true');
       else el.removeAttribute('contenteditable');
-    });
+    }));
   };
 
   document.addEventListener('keydown', (e) => {
@@ -346,8 +423,16 @@ document.addEventListener('DOMContentLoaded', function () {
       s.x = snap(pending.start.x + dx);
       s.y = snap(pending.start.y + dy);
     } else {
+      // Scale, then snap the resulting displayed width to a multiple of GRID
+      // so a scaled component still lines up with the grid.
       const factor = 1 + (dx + dy) / 220;
-      s.s = Math.max(0.2, Math.min(6, pending.start.s * factor));
+      let ns = Math.max(0.2, Math.min(6, pending.start.s * factor));
+      const iw = pending.el.offsetWidth;
+      if (iw > 0) {
+        const targetW = Math.max(GRID, Math.round(iw * ns / GRID) * GRID);
+        ns = targetW / iw;
+      }
+      s.s = ns;
     }
     setS(pending.el, s);
     e.preventDefault();
@@ -364,4 +449,17 @@ document.addEventListener('DOMContentLoaded', function () {
     pending = null;
   };
   document.addEventListener('pointerup', endDrag);
-  document.
+  document.addEventListener('pointercancel', endDrag);
+
+  document.addEventListener('click', (e) => {
+    if (!manualMode) return;
+    const target = e.target.closest('a, button, input[type="submit"], input[type="button"]');
+    if (target && target.closest('.mh-component')) {
+      e.preventDefault();
+    }
+  }, true);
+});
+/* ==== end ManualHTML boilerplate ==== */
+</script>
+</body>
+</html>
