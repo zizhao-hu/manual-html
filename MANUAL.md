@@ -9,7 +9,7 @@ Every HTML output is wired with a 3D-grid editable layer. `M` toggles **Manual M
 1. **Every atomic block is its own `.mh-component`.** Row of three cards → three components. Stats strip of four numbers → four. Testimonial grid → one per quote. If moving one should leave the others behind, they're separate.
 2. **Don't set `position`, `left`, `top`, `transform`, `z-index`, or fixed `height` on `.mh-component`** — the boilerplate owns those. `height: auto` so text grows.
 3. **Don't set `contenteditable` yourself** — Manual Mode handles it.
-4. **Keyboard shortcuts live in the `.mh-hint` box only** — not in page content.
+4. **Keyboard shortcuts live in the `.mh-hint` popup only** — shown once on first visit, dismissed by the user (Got it / Esc / backdrop), never shown again (persisted via `localStorage`). Don't put shortcut instructions in page content.
 5. **Don't strip or rename the boilerplate classes.** `.mh-stage`, `.mh-component`, `.mh-slide`, `.mh-grid`, `.mh-mode-badge`, `.mh-hint` are the contract.
 
 ## Skeleton
@@ -26,17 +26,18 @@ Every HTML output is wired with a 3D-grid editable layer. `M` toggles **Manual M
     <header class="mh-component">…</header>
     <section class="mh-component">…</section>
   </div>
-  <details class="mh-hint"><summary>?</summary>
-    <div class="mh-hint-body">
-      <strong>Shortcuts</strong>
+  <div class="mh-hint" role="dialog" aria-modal="true" aria-labelledby="mh-hint-title">
+    <div class="mh-hint-card">
+      <strong id="mh-hint-title">ManualHTML</strong>
       <ul>
         <li><kbd>M</kbd> toggle Manual Mode</li>
         <li>Drag to move, corner handle to scale — snaps to 60px</li>
         <li><kbd>↑</kbd>/<kbd>↓</kbd> depth of selected</li>
         <li>Click text to edit</li>
       </ul>
+      <button type="button" class="mh-hint-dismiss">Got it</button>
     </div>
-  </details>
+  </div>
   <script>/* boilerplate */</script>
 </body>
 </html>
@@ -84,15 +85,16 @@ body.mh-manual-mode .mh-grid{opacity:1}
 body.mh-manual-mode .mh-mode-badge{display:block}
 .mh-depth-readout{position:absolute;top:-22px;left:0;font:600 11px/1 ui-monospace,Menlo,monospace;color:var(--mh-accent);background:#fff;padding:2px 6px;border-radius:4px;border:1px solid color-mix(in srgb,var(--mh-accent) 40%,transparent);pointer-events:none;display:none}
 body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout{display:block}
-.mh-hint{position:fixed;bottom:20px;right:20px;z-index:10001;font:13px/1.4 system-ui,sans-serif}
-.mh-hint>summary{width:36px;height:36px;background:var(--mh-accent);color:#fff;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-weight:700;font-size:18px;list-style:none;box-shadow:0 6px 18px rgba(0,0,0,.25);user-select:none;outline:none}
-.mh-hint>summary::-webkit-details-marker,.mh-hint>summary::marker{display:none}
-.mh-hint[open]>summary{border-radius:50% 50% 8px 50%}
-.mh-hint-body{position:absolute;bottom:48px;right:0;background:var(--mh-hint-bg);padding:14px 18px;border-radius:12px;border:1px solid var(--mh-hint-border);box-shadow:0 20px 40px -16px rgba(0,0,0,.25);width:280px;color:var(--mh-hint-fg)}
-.mh-hint-body strong{display:block;margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mh-accent)}
-.mh-hint-body ul{margin:0;padding-left:18px}
-.mh-hint-body li{margin:5px 0}
-.mh-hint-body kbd{font:600 11px/1 ui-monospace,Menlo,monospace;padding:2px 6px;background:#1f2937;color:#fff;border-radius:4px;margin:0 1px}
+.mh-hint{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;background:rgba(0,0,0,.42);font:13px/1.4 system-ui,sans-serif;animation:mh-hint-in .18s ease-out}
+.mh-hint[hidden]{display:none!important}
+@keyframes mh-hint-in{from{opacity:0}to{opacity:1}}
+.mh-hint-card{background:var(--mh-hint-bg);color:var(--mh-hint-fg);padding:20px 24px;border-radius:12px;border:1px solid var(--mh-hint-border);box-shadow:0 24px 60px -10px rgba(0,0,0,.4);max-width:360px;width:calc(100% - 48px)}
+.mh-hint-card strong{display:block;margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mh-accent)}
+.mh-hint-card ul{margin:0 0 16px;padding-left:18px}
+.mh-hint-card li{margin:6px 0}
+.mh-hint-card kbd{font:600 11px/1 ui-monospace,Menlo,monospace;padding:2px 6px;background:#1f2937;color:#fff;border-radius:4px;margin:0 1px}
+.mh-hint-dismiss{background:var(--mh-accent);color:#fff;border:0;padding:8px 18px;border-radius:8px;cursor:pointer;font:inherit;font-weight:600}
+.mh-hint-dismiss:hover{filter:brightness(1.08)}
 body.mh-deck .mh-slide{position:relative}
 body.mh-deck .mh-grid{display:none}
 body.mh-deck.mh-deck-ready .mh-stage{position:static;min-height:0;perspective:none;transform-style:flat}
@@ -114,6 +116,7 @@ document.addEventListener('DOMContentLoaded',function(){
 const GRID=60,Z=20,DT=4;
 const snap=v=>Math.round(v/GRID)*GRID,snapUp=v=>Math.max(GRID,Math.ceil(v/GRID)*GRID);
 const stage=document.querySelector('.mh-stage');if(!stage)return;
+(function(){const h=document.querySelector('.mh-hint');if(!h)return;let seen=false;try{seen=!!localStorage.getItem('mh-hint-seen')}catch{}if(seen){h.remove();return}const close=()=>{try{localStorage.setItem('mh-hint-seen','1')}catch{}h.remove()};const btn=h.querySelector('.mh-hint-dismiss');if(btn)btn.addEventListener('click',close);h.addEventListener('click',e=>{if(e.target===h)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.contains(h)){close();e.preventDefault()}})})();
 let mm=false,sel=null,pd=null;
 const isDeck=document.body.classList.contains('mh-deck');
 const slides=isDeck?Array.from(document.querySelectorAll('.mh-slide')):[];
