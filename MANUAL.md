@@ -1,10 +1,12 @@
 # ManualHTML
 
-Convention for Claude Code: when the user asks for HTML (page, deck, dashboard, viz, anything), follow this spec.
+Convention for Claude Code: when the user asks for HTML (page, deck, dashboard, viz, anything), wire every output with this layer.
+
+**Scope of this spec.** This is only about the editability layer — the 3D grid, the drag/scale/edit mechanics, and Manual Mode. Colors, typography, backgrounds, imagery, decorative layout, and the overall visual tone of the page come from the user's conversation, not from here. Do not use this spec to justify a particular look.
 
 ## Core rule
 
-Every UI component lives on a 3D grid. X/Y snap to a uniform **60px** grid. Z (depth) is controlled with `↑`/`↓` in **20px** steps. Components are draggable, scalable, and every text element inside them is directly editable. Grid, handles, and editability are visible only in **Manual Mode** (toggled with `M`).
+Every UI component lives on a 3D grid. X/Y snap to **60px**. Z depth (`↑`/`↓`) in **20px** steps. Components are draggable, scalable, and every text element inside them is directly editable. Grid, handles, and editability are visible only in **Manual Mode** (toggled with `M`).
 
 ## Required behavior
 
@@ -80,7 +82,7 @@ Heuristic: if moving one would feel like it should leave the others behind, they
       </div>
     </details>
 
-    <style>/* boilerplate + page styles */</style>
+    <style>/* boilerplate + YOUR page styles */</style>
     <script>/* boilerplate */</script>
   </body>
 </html>
@@ -115,16 +117,24 @@ This is the key difference from a page: in a deck, the grid belongs to the curre
 
 ### Deck tips
 - Put content in `.mh-component` children inside the slide, not in the slide's own HTML. Every paragraph, heading, and bullet group should be its own component so the user can rearrange the slide freely.
-- Give each slide a natural canvas size in page CSS (e.g. `width: 1080px; min-height: 720px`). Deck-mode CSS renders slides fullscreen; components keep their slide-local coordinates.
-- A title slide is just a slide with larger headings — no special class needed.
+- Slides are sized fullscreen at runtime (`100vw × 100vh`). Any natural layout you give them (padding, alignment) is preserved; components keep their slide-local coordinates.
 
-## Boilerplate CSS — paste verbatim; page styles come after
+## Boilerplate CSS — paste verbatim; your page styles go *after*
+
+This block only defines behavior. It does **not** set the page's font, background, color, or any decorative style — that's yours to shape from the conversation. The Manual-Mode UI (grid, handles, badge, hint box) uses a CSS variable `--mh-accent`; override it if you want the control chrome to match your theme.
 
 ```html
 <style>
-/* ==== ManualHTML boilerplate ==== */
+/* ==== ManualHTML boilerplate — behavior only, override freely ==== */
 html, body { margin: 0; padding: 0; }
-body { font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background: #f7f7f8; color: #111; }
+
+:root {
+  --mh-accent: #2563eb;          /* Manual-Mode chrome color — override to taste */
+  --mh-grid-line: rgba(37,99,235,.32);
+  --mh-hint-bg: #fff;
+  --mh-hint-fg: #111;
+  --mh-hint-border: rgba(0,0,0,.1);
+}
 
 .mh-stage {
   position: relative;
@@ -149,19 +159,19 @@ body { font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background
 .mh-resize-handle {
   position: absolute; right: -7px; bottom: -7px;
   width: 14px; height: 14px;
-  background: #2563eb; border: 2px solid #fff; border-radius: 50%;
+  background: var(--mh-accent); border: 2px solid #fff; border-radius: 50%;
   cursor: nwse-resize; display: none; z-index: 5;
   box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
 body.mh-manual-mode .mh-resize-handle { display: block; }
-body.mh-manual-mode .mh-component { outline: 1px dashed rgba(37,99,235,.55); cursor: grab; }
-body.mh-manual-mode .mh-component.mh-selected { outline: 2px solid #2563eb; }
+body.mh-manual-mode .mh-component { outline: 1px dashed color-mix(in srgb, var(--mh-accent) 55%, transparent); cursor: grab; }
+body.mh-manual-mode .mh-component.mh-selected { outline: 2px solid var(--mh-accent); }
 body.mh-manual-mode .mh-component:active { cursor: grabbing; }
 body.mh-manual-mode .mh-component [contenteditable="true"] { cursor: text; outline: none; }
 body.mh-manual-mode .mh-component [contenteditable="true"]:focus {
-  background: rgba(37,99,235,.08);
+  background: color-mix(in srgb, var(--mh-accent) 8%, transparent);
   border-radius: 3px;
-  box-shadow: 0 0 0 2px rgba(37,99,235,.25);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--mh-accent) 25%, transparent);
 }
 
 .mh-grid {
@@ -171,8 +181,8 @@ body.mh-manual-mode .mh-component [contenteditable="true"]:focus {
   transition: opacity .2s;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(37,99,235,.32) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37,99,235,.32) 1px, transparent 1px);
+    linear-gradient(var(--mh-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mh-grid-line) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: 0 0;
 }
@@ -181,12 +191,12 @@ body.mh-manual-mode .mh-grid { opacity: 1; }
 .mh-mode-badge {
   position: fixed; top: 12px; right: 12px;
   padding: 8px 14px;
-  background: #2563eb; color: #fff;
+  background: var(--mh-accent); color: #fff;
   border-radius: 999px;
   font: 600 12px/1.3 system-ui, sans-serif;
   z-index: 10000;
   display: none;
-  box-shadow: 0 4px 12px rgba(37,99,235,.35);
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
   max-width: 520px;
 }
 body.mh-manual-mode .mh-mode-badge { display: block; }
@@ -194,9 +204,9 @@ body.mh-manual-mode .mh-mode-badge { display: block; }
 .mh-depth-readout {
   position: absolute; top: -22px; left: 0;
   font: 600 11px/1 ui-monospace, Menlo, monospace;
-  color: #2563eb; background: #fff;
+  color: var(--mh-accent); background: #fff;
   padding: 2px 6px; border-radius: 4px;
-  border: 1px solid rgba(37,99,235,.4);
+  border: 1px solid color-mix(in srgb, var(--mh-accent) 40%, transparent);
   pointer-events: none; display: none;
 }
 body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block; }
@@ -208,13 +218,13 @@ body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block
 }
 .mh-hint > summary {
   width: 36px; height: 36px;
-  background: #2563eb; color: #fff;
+  background: var(--mh-accent); color: #fff;
   border-radius: 50%;
   display: grid; place-items: center;
   cursor: pointer;
   font-weight: 700; font-size: 18px;
   list-style: none;
-  box-shadow: 0 6px 18px rgba(37,99,235,.35);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
   user-select: none; outline: none;
 }
 .mh-hint > summary::-webkit-details-marker { display: none; }
@@ -222,16 +232,16 @@ body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block
 .mh-hint[open] > summary { border-radius: 50% 50% 8px 50%; }
 .mh-hint-body {
   position: absolute; bottom: 48px; right: 0;
-  background: #fff;
+  background: var(--mh-hint-bg);
   padding: 14px 18px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--mh-hint-border);
   box-shadow: 0 20px 40px -16px rgba(0,0,0,.25);
-  width: 280px; color: #111;
+  width: 280px; color: var(--mh-hint-fg);
 }
-.mh-hint-body strong { display: block; margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: #2563eb; }
+.mh-hint-body strong { display: block; margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--mh-accent); }
 .mh-hint-body ul { margin: 0; padding-left: 18px; }
-.mh-hint-body li { margin: 5px 0; color: #374151; }
+.mh-hint-body li { margin: 5px 0; }
 .mh-hint-body kbd {
   font: 600 11px/1 ui-monospace, Menlo, monospace;
   padding: 2px 6px;
@@ -271,8 +281,8 @@ body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide.mh-current::before {
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(37,99,235,.32) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37,99,235,.32) 1px, transparent 1px);
+    linear-gradient(var(--mh-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mh-grid-line) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: 0 0;
 }
@@ -545,18 +555,10 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 ```
 
-## Style rules
+## Integration rules (what to leave alone so the layer keeps working)
 
-- Never strip the boilerplate. If the user asks for "just the HTML," include it anyway — it's the convention.
-- **Be granular.** Every atomic block gets its own `.mh-component` (see granularity section). Don't wrap multiple independent cards/stats/quotes under a single `.mh-component`.
-- Aim on-grid on first pass: margins and widths that are multiples of 60px. The boilerplate will snap anything off-grid at load, but on-grid input gives the cleanest default.
-- Page CSS for components must **not** set `position`, `left`, `top`, `transform`, `z-index`, or fixed `height`. Boilerplate owns position/transform; `height: auto` lets text grow.
-- Every text element becomes editable automatically in Manual Mode — don't set `contenteditable` yourself.
-- **Slides:** use deck mode (`<body class="mh-deck">`, `<section class="mh-slide">` wrapping `<div class="mh-component">` children). The boilerplate renders a fullscreen slideshow; Manual Mode shows a grid on the current slide and makes its components editable and draggable — no unfold.
-- Charts/visualizations: wrap the container in `.mh-component`. The scale transform handles visual resizing without re-rendering.
-- Do **not** put keyboard/mouse instructions in page content — the `.mh-hint` box carries them.
+These are about keeping the controllable-UI layer functional — not about how the page looks.
 
-## Examples in this repo
-
-- `test/coffee-shop.html` — complex landing page, many individually-adjustable components.
-- `test/slides.html` — six-slide deck in deck mode (fullscreen slideshow; press `M` to edit the current slide on a grid).
+- **Don't strip the boilerplate or rename the classes.** `.mh-stage`, `.mh-component`, `.mh-slide`, `.mh-grid`, `.mh-mode-badge`, `.mh-hint` are the contract. Even if the user asks for "just the HTML," include them.
+- **Don't set `position`, `left`, `top`, `transform`, `z-index`, or a fixed `height` on `.mh-component`** from your page CSS. The boilerplate owns positioning and transform; `height: auto` lets text grow so the bottom-snap can work.
+- **Don't set 
