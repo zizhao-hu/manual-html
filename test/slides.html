@@ -114,39 +114,45 @@ body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block
   margin: 0 1px;
 }
 
-/* ---- Deck mode (body.mh-deck): fullscreen slideshow by default. ---- */
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-stage {
+/* ---- Deck mode (body.mh-deck): fullscreen slideshow, per-slide grid. ---- */
+body.mh-deck .mh-slide { position: relative; }        /* slide is its components' positioning context */
+body.mh-deck .mh-grid { display: none; }              /* stage-level grid never renders in decks */
+body.mh-deck.mh-deck-ready .mh-stage {
   position: static;
   min-height: 0;
   perspective: none;
   transform-style: flat;
 }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-grid { display: none; }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide {
+body.mh-deck.mh-deck-ready .mh-slide {
   position: fixed !important;
   inset: 0 !important;
   left: 0 !important; top: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  transform: none !important;
   margin: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   box-sizing: border-box;
+  overflow: hidden;
   display: none !important;
   z-index: 5000;
-  padding: 60px 120px;
 }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide.mh-current {
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+body.mh-deck.mh-deck-ready .mh-slide.mh-current { display: block !important; }
+body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide.mh-current::before {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(37,99,235,.32) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.32) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: 0 0;
 }
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-resize-handle,
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-depth-readout {
-  display: none !important;
-}
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-depth-readout { display: none !important; }
+body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide:not(.mh-current) .mh-resize-handle,
+body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide:not(.mh-current) .mh-depth-readout { display: none !important; }
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) { cursor: pointer; }
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) [contenteditable],
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) a,
@@ -162,111 +168,101 @@ body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-hint { cursor: auto; }
   display: none;
   pointer-events: none;
 }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-deck-counter { display: block; }
+body.mh-deck.mh-deck-ready .mh-deck-counter { display: block; }
 /* ==== end boilerplate ==== */
 
 /* ---------- Page styles: deck ---------- */
 body { background: #0b1220; color: #e5e7eb; }
-.mh-stage { width: 1080px; margin: 0 auto; padding: 60px 60px 180px; }
 
 .mh-slide {
-  width: 900px;
-  margin-bottom: 60px;
-  padding: 48px 60px;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 60px 120px;
+  box-sizing: border-box;
   background: #0f172a;
-  border: 1px solid #1f2937;
-  border-radius: 16px;
   color: #e5e7eb;
-  box-shadow: 0 20px 60px -20px rgba(0,0,0,.6);
 }
-.mh-slide .eyebrow { font: 600 12px/1 ui-monospace, Menlo, monospace; letter-spacing: .25em; text-transform: uppercase; color: #60a5fa; margin: 0 0 20px; }
-.mh-slide h1 { font: 700 56px/1.05 ui-serif, Georgia, serif; margin: 0 0 20px; letter-spacing: -.02em; color: #f9fafb; }
-.mh-slide h2 { font: 700 40px/1.1 ui-serif, Georgia, serif; margin: 0 0 20px; letter-spacing: -.02em; color: #f9fafb; }
-.mh-slide p  { font-size: 22px; line-height: 1.55; margin: 0 0 16px; color: #cbd5e1; }
-.mh-slide ul { margin: 16px 0; padding-left: 28px; }
-.mh-slide li { font-size: 21px; line-height: 1.55; margin: 10px 0; color: #cbd5e1; }
-.mh-slide .tag { font-size: 18px; color: #94a3b8; }
+.mh-slide.title { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 70%); }
+
+.mh-slide .eyebrow { font: 600 14px/1 ui-monospace, Menlo, monospace; letter-spacing: .25em; text-transform: uppercase; color: #60a5fa; margin: 0; }
+.mh-slide h1 { font: 700 84px/1.05 ui-serif, Georgia, serif; margin: 0; letter-spacing: -.02em; color: #f9fafb; max-width: 900px; }
+.mh-slide h2 { font: 700 56px/1.1 ui-serif, Georgia, serif; margin: 0; letter-spacing: -.02em; color: #f9fafb; max-width: 900px; }
+.mh-slide p  { font-size: 26px; line-height: 1.5; margin: 0; color: #cbd5e1; max-width: 840px; }
+.mh-slide ul { margin: 0; padding-left: 32px; max-width: 900px; }
+.mh-slide li { font-size: 24px; line-height: 1.5; margin: 8px 0; color: #cbd5e1; }
+.mh-slide .tag { font-size: 20px; color: #94a3b8; }
 .mh-slide strong { color: #f9fafb; }
-.mh-slide .big { font: 700 96px/1 ui-serif, Georgia, serif; letter-spacing: -.04em; color: #60a5fa; margin: 10px 0; }
-.mh-slide .cta-btn { display: inline-block; margin-top: 24px; padding: 16px 28px; background: #2563eb; color: #fff; border: 0; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
-
-/* Title slide variant */
-.mh-slide.title { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 70%); border-color: #1e40af; }
-
-/* Two-column slide */
-.mh-slide .cols { display: flex; gap: 48px; width: 100%; align-items: flex-start; margin-top: 20px; }
-.mh-slide .cols > div { flex: 1; }
-
-/* Code-style callout */
+.mh-slide .big { font: 700 140px/1 ui-serif, Georgia, serif; letter-spacing: -.04em; color: #60a5fa; margin: 0; }
+.mh-slide .cta-btn { display: inline-block; padding: 18px 32px; background: #2563eb; color: #fff; border: 0; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; }
 .mh-slide code {
-  font: 600 18px/1.4 ui-monospace, Menlo, monospace;
+  font: 600 22px/1.4 ui-monospace, Menlo, monospace;
   background: #0b1220;
   border: 1px solid #1f2937;
-  padding: 2px 8px;
+  padding: 2px 10px;
   border-radius: 6px;
   color: #93c5fd;
 }
+
+/* Components stack with natural vertical rhythm inside a slide */
+.mh-slide > .mh-component { margin: 0 0 32px; }
+.mh-slide > .mh-component:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body class="mh-deck">
   <div class="mh-stage">
     <div class="mh-grid" aria-hidden="true"></div>
-    <div class="mh-mode-badge">Manual Mode · slides unfolded on the grid</div>
+    <div class="mh-mode-badge">Manual Mode · edit current slide</div>
 
-    <section class="mh-component mh-slide title">
-      <p class="eyebrow">A convention for Claude Code</p>
-      <h1>ManualHTML</h1>
-      <p>Every page, every deck, every dashboard — on a 3D grid. Editable in place. Keyboard-quick to rearrange.</p>
-      <p class="tag">Press <strong>→</strong> or click to begin.</p>
+    <section class="mh-slide title">
+      <div class="mh-component"><p class="eyebrow">A convention for Claude Code</p></div>
+      <div class="mh-component"><h1>ManualHTML</h1></div>
+      <div class="mh-component"><p>Every page, every deck, every dashboard — on a 3D grid. Editable in place. Keyboard-quick to rearrange.</p></div>
+      <div class="mh-component"><p class="tag">Press <strong>→</strong> or click to begin.</p></div>
     </section>
 
-    <section class="mh-component mh-slide">
-      <p class="eyebrow">The idea</p>
-      <h2>Generated UI should be rearrangeable.</h2>
-      <p>Claude Code already produces HTML in one shot. ManualHTML adds a second step: the user can nudge things into place without reopening the editor.</p>
-      <ul>
-        <li><strong>Every block</strong> is a component on a 60px grid.</li>
-        <li><strong>Press <code>M</code></strong> — grid appears, drag to move, corner handle to scale.</li>
-        <li><strong>Click any text</strong> to edit it live.</li>
-      </ul>
-    </section>
-
-    <section class="mh-component mh-slide">
-      <p class="eyebrow">A 3D grid</p>
-      <h2>X, Y, and Z.</h2>
-      <div class="cols">
-        <div>
-          <p><strong>X / Y</strong> — position, snapped to 60px.</p>
-          <p><strong>Scale</strong> — corner handle, also snapped to 60px.</p>
-          <p><strong>Z</strong> — <code>↑</code>/<code>↓</code> change depth in 20px steps. Layer things.</p>
-        </div>
-        <div>
-          <p><strong>Bottom</strong> — every component's bottom edge snaps to the next grid line. Cards, heroes, slides all align vertically.</p>
-          <p><strong>Edit</strong> — click text to edit. Links and buttons don't navigate in Manual Mode so you can fix their labels.</p>
-        </div>
+    <section class="mh-slide">
+      <div class="mh-component"><p class="eyebrow">The idea</p></div>
+      <div class="mh-component"><h2>Generated UI should be rearrangeable.</h2></div>
+      <div class="mh-component"><p>Claude Code already produces HTML in one shot. ManualHTML adds a second step: the user can nudge things into place without reopening the editor.</p></div>
+      <div class="mh-component">
+        <ul>
+          <li><strong>Every block</strong> is a component on a 60px grid.</li>
+          <li><strong>Press <code>M</code></strong> — grid appears, drag to move, corner handle to scale.</li>
+          <li><strong>Click any text</strong> to edit it live.</li>
+        </ul>
       </div>
     </section>
 
-    <section class="mh-component mh-slide">
-      <p class="eyebrow">For decks specifically</p>
-      <h2>This is a deck.</h2>
-      <p>A deck is just a page with <code>body class="mh-deck"</code>. The default view becomes a fullscreen slideshow — one slide fills the viewport, click or <code>→</code> advances, <code>←</code> goes back.</p>
-      <p>Press <code>M</code> and all the slides unfold onto the grid. Drag them, scale them, edit their text — then press <code>M</code> again and the slideshow resumes with your changes.</p>
+    <section class="mh-slide">
+      <div class="mh-component"><p class="eyebrow">A 3D grid</p></div>
+      <div class="mh-component"><h2>X, Y, and Z.</h2></div>
+      <div class="mh-component"><p><strong>X / Y</strong> — position, snapped to 60px.</p></div>
+      <div class="mh-component"><p><strong>Scale</strong> — corner handle, also snapped to 60px.</p></div>
+      <div class="mh-component"><p><strong>Z</strong> — <code>↑</code>/<code>↓</code> change depth in 20px steps. Layer things.</p></div>
+      <div class="mh-component"><p><strong>Edit</strong> — click text to edit. Links and buttons don't navigate in Manual Mode so you can fix their labels.</p></div>
     </section>
 
-    <section class="mh-component mh-slide">
-      <p class="eyebrow">Authoring model</p>
-      <h2>One spec. Any prompt.</h2>
-      <p>MANUAL.md is the convention — it defines the grid, the keyboard model, and the boilerplate CSS and JS. It has no content of its own.</p>
-      <p>Your prompt ("a bakery landing page," "a pitch deck for Lumen Notes") is separate. Claude applies the convention to your prompt.</p>
-      <p class="tag">Paste MANUAL.md into your project's CLAUDE.md and ask for whatever you want.</p>
+    <section class="mh-slide">
+      <div class="mh-component"><p class="eyebrow">For decks specifically</p></div>
+      <div class="mh-component"><h2>Grid on the current slide.</h2></div>
+      <div class="mh-component"><p>A deck is just a page with <code>body class="mh-deck"</code>. Slides are containers; each slide has its own <code>.mh-component</code> children.</p></div>
+      <div class="mh-component"><p>Default view: fullscreen slideshow. Click or <code>→</code> advances, <code>←</code> goes back.</p></div>
+      <div class="mh-component"><p>Press <code>M</code> and the grid appears <em>on the current slide only</em>. Drag its components around. <code>→</code>/<code>←</code> still switch slides so you can edit each one.</p></div>
     </section>
 
-    <section class="mh-component mh-slide">
-      <p class="eyebrow">End</p>
-      <h2>Press <code>M</code>.</h2>
-      <p>See these six slides unfold onto the grid. Drag them into whatever order feels right. Scale one bigger. Edit a heading. Press <code>M</code> again — the slideshow resumes with your changes.</p>
-      <button class="cta-btn">Try it</button>
+    <section class="mh-slide">
+      <div class="mh-component"><p class="eyebrow">Authoring model</p></div>
+      <div class="mh-component"><h2>One spec. Any prompt.</h2></div>
+      <div class="mh-component"><p>MANUAL.md is the convention — it defines the grid, the keyboard model, and the boilerplate CSS and JS. It has no content of its own.</p></div>
+      <div class="mh-component"><p>Your prompt ("a bakery landing page," "a pitch deck for Lumen Notes") is separate. Claude applies the convention to your prompt.</p></div>
+      <div class="mh-component"><p class="tag">Paste MANUAL.md into your project's CLAUDE.md and ask for whatever you want.</p></div>
+    </section>
+
+    <section class="mh-slide">
+      <div class="mh-component"><p class="eyebrow">End</p></div>
+      <div class="mh-component"><h2>Press <code>M</code>.</h2></div>
+      <div class="mh-component"><p>The grid shows up on this slide. Drag the heading. Scale the paragraph. Edit a word. Press <code>M</code> again — the slideshow resumes with your changes.</p></div>
+      <div class="mh-component"><button class="cta-btn">Try it</button></div>
     </section>
   </div>
 
@@ -294,6 +290,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const stage = document.querySelector('.mh-stage');
   if (!stage) return;
   let manualMode = false, selected = null, pending = null;
+  const isDeck = document.body.classList.contains('mh-deck');
+  const slides = isDeck ? Array.from(document.querySelectorAll('.mh-slide')) : [];
 
   const getS = el => ({
     x: parseFloat(el.dataset.mhX || '0'),
@@ -310,10 +308,12 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const comps = Array.from(document.querySelectorAll('.mh-component'));
-  const sr = stage.getBoundingClientRect();
+  const containerFor = el => (isDeck && el.closest('.mh-slide')) || stage;
   const rects = comps.map(el => {
+    const c = containerFor(el);
+    const cr = c.getBoundingClientRect();
     const r = el.getBoundingClientRect();
-    return { left: r.left - sr.left, top: r.top - sr.top, width: r.width };
+    return { left: r.left - cr.left, top: r.top - cr.top, width: r.width };
   });
 
   const snapHeight = el => {
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     stage.style.minHeight = Math.max(mb + 120, window.innerHeight) + 'px';
   };
-  recomputeStageHeight();
+  if (!isDeck) recomputeStageHeight();
   if (window.ResizeObserver) {
     let scheduled = false;
     const ro = new ResizeObserver(() => {
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
       requestAnimationFrame(() => {
         scheduled = false;
         comps.forEach(snapHeight);
-        recomputeStageHeight();
+        if (!isDeck) recomputeStageHeight();
       });
     });
     comps.forEach(el => ro.observe(el));
@@ -373,14 +373,18 @@ document.addEventListener('DOMContentLoaded', function () {
     let n; while ((n = walker.nextNode())) cb(n);
   };
   const setEditable = on => {
-    comps.forEach(c => walkEditables(c, el => {
-      if (on) el.setAttribute('contenteditable', 'true');
-      else el.removeAttribute('contenteditable');
-    }));
+    comps.forEach(c => walkEditables(c, el => el.removeAttribute('contenteditable')));
+    if (!on) return;
+    comps.forEach(c => {
+      if (isDeck) {
+        const slide = c.closest('.mh-slide');
+        if (slide && !slide.classList.contains('mh-current')) return;
+      }
+      walkEditables(c, el => el.setAttribute('contenteditable', 'true'));
+    });
   };
 
-  const isDeck = document.body.classList.contains('mh-deck');
-  const slides = isDeck ? comps.filter(c => c.classList.contains('mh-slide')) : [];
+  // ---- Deck mode: one slide fills the viewport; click or arrow advances. ----
   let current = 0;
   let deckCounter = null;
   const showSlide = (idx) => {
@@ -388,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
     current = ((idx % slides.length) + slides.length) % slides.length;
     slides.forEach((s, i) => s.classList.toggle('mh-current', i === current));
     if (deckCounter) deckCounter.textContent = (current + 1) + ' / ' + slides.length;
+    if (manualMode) setEditable(true);
   };
   if (isDeck && slides.length) {
     deckCounter = document.createElement('div');
@@ -408,13 +413,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!manualMode && document.activeElement && document.activeElement.blur) document.activeElement.blur();
       return;
     }
-    if (isDeck && !manualMode) {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        showSlide(current + 1); e.preventDefault(); return;
-      }
-      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        showSlide(current - 1); e.preventDefault(); return;
-      }
+    if (isDeck) {
+      if (e.key === 'ArrowRight') { showSlide(current + 1); e.preventDefault(); return; }
+      if (e.key === 'ArrowLeft')  { showSlide(current - 1); e.preventDefault(); return; }
+      if (!manualMode && (e.key === ' ' || e.key === 'PageDown')) { showSlide(current + 1); e.preventDefault(); return; }
+      if (!manualMode && e.key === 'PageUp') { showSlide(current - 1); e.preventDefault(); return; }
     }
     if (!manualMode || !selected) return;
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {

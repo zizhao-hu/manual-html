@@ -31,7 +31,7 @@ Every **atomic visual block the user might want to move or resize on its own** i
 - A hero with heading + subhead + CTA button → if they always move together, one component. If you want the CTA button positionable independently, make it its own component.
 - A stats strip of four numbers → four components.
 - A testimonial grid → one component per quote.
-- A slide deck → one component per slide (see deck mode).
+- A slide deck → each slide is a *container*; the text blocks inside a slide are the components (see deck mode).
 
 **Wrong:**
 ```html
@@ -90,17 +90,32 @@ Everything visible goes inside `.mh-stage`. Every logical atomic block gets `cla
 
 ## Deck mode (for slideshows)
 
-Opt in by adding `class="mh-deck"` to `<body>`. Each slide is `<section class="mh-component mh-slide">…</section>`.
+Opt in by adding `class="mh-deck"` to `<body>`. A deck is structured differently from a page:
 
-**Default (not Manual Mode):** the page behaves like a fullscreen slideshow. One slide fills the viewport at a time. Click anywhere (outside buttons/links/the hint box), or press `→`/`Space`/`PageDown` to advance, `←`/`PageUp` to go back. A small "n / total" counter sits in the bottom-left.
+```html
+<body class="mh-deck">
+  <div class="mh-stage">
+    <section class="mh-slide">
+      <div class="mh-component"> ... title ... </div>
+      <div class="mh-component"> ... body paragraph ... </div>
+      <div class="mh-component"> ... bullet list ... </div>
+    </section>
+    <section class="mh-slide"> ... </section>
+  </div>
+</body>
+```
 
-**Manual Mode (`M`):** all slides unfold onto the grid at their on-load cascaded positions. Drag them around, scale, edit text in place, change their depth. Exit Manual Mode and the slideshow resumes with the rearranged/edited slides.
+**Slides are containers, not components.** Each `<section class="mh-slide">` holds its own `.mh-component` children — the atomic blocks the user can move, scale, and edit. You don't drag a slide; you drag things *inside* a slide.
 
-This is the only behavioral difference from a regular page. All editing, grid, drag, and scale rules are identical. For slideshow content, add `class="mh-deck"` on `<body>` and `class="mh-slide"` on every slide component.
+**Default (not Manual Mode):** fullscreen slideshow. One slide fills the viewport at a time. Click anywhere (outside buttons/links/the hint box), or press `→`/`Space`/`PageDown` to advance, `←`/`PageUp` to go back. A small "n / total" counter sits in the bottom-left.
+
+**Manual Mode (`M`):** still on the current slide — **no unfold**. The grid appears *on the current slide only*, and the components inside that slide become draggable, resizable, and editable. `←`/`→` still move between slides so you can edit each one in turn. `↑`/`↓` nudge a selected component's Z-depth as usual. Press `M` again and the slideshow resumes.
+
+This is the key difference from a page: in a deck, the grid belongs to the current slide, not the whole stage, and Manual Mode never unfolds — editing happens in place on one slide at a time.
 
 ### Deck tips
-- Give each slide a fixed width (e.g. `900px`) in page CSS — that's the Manual-Mode width. Fullscreen view overrides to `100vw`.
-- Cascade slides' on-load positions by natural block flow: each slide pushes the next down, so they fan out automatically when Manual Mode unfolds them; the boilerplate snaps the measured positions to the grid.
+- Put content in `.mh-component` children inside the slide, not in the slide's own HTML. Every paragraph, heading, and bullet group should be its own component so the user can rearrange the slide freely.
+- Give each slide a natural canvas size in page CSS (e.g. `width: 1080px; min-height: 720px`). Deck-mode CSS renders slides fullscreen; components keep their slide-local coordinates.
 - A title slide is just a slide with larger headings — no special class needed.
 
 ## Boilerplate CSS — paste verbatim; page styles come after
@@ -225,39 +240,48 @@ body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block
   margin: 0 1px;
 }
 
-/* ---- Deck mode (body.mh-deck): fullscreen slideshow by default. ---- */
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-stage {
+/* ---- Deck mode (body.mh-deck): fullscreen slideshow, per-slide grid. ---- */
+body.mh-deck .mh-slide { position: relative; }        /* slide is its components' positioning context */
+body.mh-deck .mh-grid { display: none; }              /* stage-level grid never renders in decks */
+body.mh-deck.mh-deck-ready .mh-stage {
   position: static;
   min-height: 0;
   perspective: none;
   transform-style: flat;
 }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-grid { display: none; }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide {
+body.mh-deck.mh-deck-ready .mh-slide {
   position: fixed !important;
   inset: 0 !important;
   left: 0 !important; top: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  transform: none !important;
   margin: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   box-sizing: border-box;
+  overflow: hidden;
   display: none !important;
   z-index: 5000;
-  padding: 60px 120px;
 }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide.mh-current {
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+body.mh-deck.mh-deck-ready .mh-slide.mh-current { display: block !important; }
+/* Grid lives on the current slide — only in Manual Mode. */
+body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide.mh-current::before {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(37,99,235,.32) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.32) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: 0 0;
 }
+/* Resize handles only on the current slide's components while editing. */
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-resize-handle,
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-depth-readout {
-  display: none !important;
-}
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-depth-readout { display: none !important; }
+body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide:not(.mh-current) .mh-resize-handle,
+body.mh-deck.mh-deck-ready.mh-manual-mode .mh-slide:not(.mh-current) .mh-depth-readout { display: none !important; }
+/* Click-to-advance cursor only outside Manual Mode. */
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) { cursor: pointer; }
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) [contenteditable],
 body.mh-deck.mh-deck-ready:not(.mh-manual-mode) a,
@@ -273,7 +297,7 @@ body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-hint { cursor: auto; }
   display: none;
   pointer-events: none;
 }
-body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-deck-counter { display: block; }
+body.mh-deck.mh-deck-ready .mh-deck-counter { display: block; }
 /* ==== end boilerplate ==== */
 </style>
 ```
@@ -291,6 +315,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const stage = document.querySelector('.mh-stage');
   if (!stage) return;
   let manualMode = false, selected = null, pending = null;
+  const isDeck = document.body.classList.contains('mh-deck');
+  const slides = isDeck ? Array.from(document.querySelectorAll('.mh-slide')) : [];
 
   const getS = el => ({
     x: parseFloat(el.dataset.mhX || '0'),
@@ -307,11 +333,14 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   // Measure natural positions, then lock each component to snapped absolute.
+  // In deck mode each component is positioned relative to its parent slide.
   const comps = Array.from(document.querySelectorAll('.mh-component'));
-  const sr = stage.getBoundingClientRect();
+  const containerFor = el => (isDeck && el.closest('.mh-slide')) || stage;
   const rects = comps.map(el => {
+    const c = containerFor(el);
+    const cr = c.getBoundingClientRect();
     const r = el.getBoundingClientRect();
-    return { left: r.left - sr.left, top: r.top - sr.top, width: r.width };
+    return { left: r.left - cr.left, top: r.top - cr.top, width: r.width };
   });
 
   // Snap minHeight UP so each component's bottom lands on a grid line.
@@ -341,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     stage.style.minHeight = Math.max(mb + 120, window.innerHeight) + 'px';
   };
-  recomputeStageHeight();
+  if (!isDeck) recomputeStageHeight();
   if (window.ResizeObserver) {
     let scheduled = false;
     const ro = new ResizeObserver(() => {
@@ -350,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
       requestAnimationFrame(() => {
         scheduled = false;
         comps.forEach(snapHeight);
-        recomputeStageHeight();
+        if (!isDeck) recomputeStageHeight();
       });
     });
     comps.forEach(el => ro.observe(el));
@@ -372,16 +401,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     let n; while ((n = walker.nextNode())) cb(n);
   };
+  // In deck mode, only the CURRENT slide's components are editable.
   const setEditable = on => {
-    comps.forEach(c => walkEditables(c, el => {
-      if (on) el.setAttribute('contenteditable', 'true');
-      else el.removeAttribute('contenteditable');
-    }));
+    comps.forEach(c => walkEditables(c, el => el.removeAttribute('contenteditable')));
+    if (!on) return;
+    comps.forEach(c => {
+      if (isDeck) {
+        const slide = c.closest('.mh-slide');
+        if (slide && !slide.classList.contains('mh-current')) return;
+      }
+      walkEditables(c, el => el.setAttribute('contenteditable', 'true'));
+    });
   };
 
   // ---- Deck mode: one slide fills the viewport; click or arrow advances. ----
-  const isDeck = document.body.classList.contains('mh-deck');
-  const slides = isDeck ? comps.filter(c => c.classList.contains('mh-slide')) : [];
   let current = 0;
   let deckCounter = null;
   const showSlide = (idx) => {
@@ -389,6 +422,8 @@ document.addEventListener('DOMContentLoaded', function () {
     current = ((idx % slides.length) + slides.length) % slides.length;
     slides.forEach((s, i) => s.classList.toggle('mh-current', i === current));
     if (deckCounter) deckCounter.textContent = (current + 1) + ' / ' + slides.length;
+    // In Manual Mode, re-apply editability so the newly-current slide is editable.
+    if (manualMode) setEditable(true);
   };
   if (isDeck && slides.length) {
     deckCounter = document.createElement('div');
@@ -410,14 +445,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!manualMode && document.activeElement && document.activeElement.blur) document.activeElement.blur();
       return;
     }
-    // Deck navigation (only outside Manual Mode)
-    if (isDeck && !manualMode) {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        showSlide(current + 1); e.preventDefault(); return;
-      }
-      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        showSlide(current - 1); e.preventDefault(); return;
-      }
+    // Deck navigation: Left/Right always navigate (even in Manual Mode, so you can
+    // switch which slide you're editing). Space/PageDown/PageUp only outside Manual Mode.
+    if (isDeck) {
+      if (e.key === 'ArrowRight') { showSlide(current + 1); e.preventDefault(); return; }
+      if (e.key === 'ArrowLeft')  { showSlide(current - 1); e.preventDefault(); return; }
+      if (!manualMode && (e.key === ' ' || e.key === 'PageDown')) { showSlide(current + 1); e.preventDefault(); return; }
+      if (!manualMode && e.key === 'PageUp') { showSlide(current - 1); e.preventDefault(); return; }
     }
     if (!manualMode || !selected) return;
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
@@ -518,11 +552,11 @@ document.addEventListener('DOMContentLoaded', function () {
 - Aim on-grid on first pass: margins and widths that are multiples of 60px. The boilerplate will snap anything off-grid at load, but on-grid input gives the cleanest default.
 - Page CSS for components must **not** set `position`, `left`, `top`, `transform`, `z-index`, or fixed `height`. Boilerplate owns position/transform; `height: auto` lets text grow.
 - Every text element becomes editable automatically in Manual Mode — don't set `contenteditable` yourself.
-- **Slides:** use deck mode (`<body class="mh-deck">`, `<section class="mh-component mh-slide">`). The boilerplate turns the default view into a fullscreen slideshow; Manual Mode unfolds all slides onto the grid.
+- **Slides:** use deck mode (`<body class="mh-deck">`, `<section class="mh-slide">` wrapping `<div class="mh-component">` children). The boilerplate renders a fullscreen slideshow; Manual Mode shows a grid on the current slide and makes its components editable and draggable — no unfold.
 - Charts/visualizations: wrap the container in `.mh-component`. The scale transform handles visual resizing without re-rendering.
 - Do **not** put keyboard/mouse instructions in page content — the `.mh-hint` box carries them.
 
 ## Examples in this repo
 
 - `test/coffee-shop.html` — complex landing page, many individually-adjustable components.
-- `test/slides.html` — five-slide deck in deck mode (fullscreen, click-to-advance; press `M` to arrange on the grid).
+- `test/slides.html` — six-slide deck in deck mode (fullscreen slideshow; press `M` to edit the current slide on a grid).
