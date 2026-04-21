@@ -2,23 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meridian Coffee — a five-slide deck (ManualHTML)</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ManualHTML — a deck about the convention</title>
 <style>
-/* ==== ManualHTML boilerplate (do not modify) ==== */
+/* ==== ManualHTML boilerplate ==== */
 html, body { margin: 0; padding: 0; }
 body { font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background: #f7f7f8; color: #111; }
-
 .mh-stage {
   position: relative;
   perspective: 1600px;
   transform-style: preserve-3d;
   min-height: 100vh;
 }
-
 .mh-component {
-  /* Start in flow so measurement reflects intended layout; JS swaps to absolute after. */
   position: relative;
   transform-style: preserve-3d;
   transform-origin: top left;
@@ -28,21 +24,15 @@ body { font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background
   height: auto;
   box-sizing: border-box;
 }
-
 .mh-resize-handle {
-  position: absolute;
-  right: -7px; bottom: -7px;
+  position: absolute; right: -7px; bottom: -7px;
   width: 14px; height: 14px;
-  background: #2563eb;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  cursor: nwse-resize;
-  display: none;
-  z-index: 5;
+  background: #2563eb; border: 2px solid #fff; border-radius: 50%;
+  cursor: nwse-resize; display: none; z-index: 5;
   box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
 body.mh-manual-mode .mh-resize-handle { display: block; }
-body.mh-manual-mode .mh-component { outline: 1px dashed rgba(37, 99, 235, .55); cursor: grab; }
+body.mh-manual-mode .mh-component { outline: 1px dashed rgba(37,99,235,.55); cursor: grab; }
 body.mh-manual-mode .mh-component.mh-selected { outline: 2px solid #2563eb; }
 body.mh-manual-mode .mh-component:active { cursor: grabbing; }
 body.mh-manual-mode .mh-component [contenteditable="true"] { cursor: text; outline: none; }
@@ -51,10 +41,8 @@ body.mh-manual-mode .mh-component [contenteditable="true"]:focus {
   border-radius: 3px;
   box-shadow: 0 0 0 2px rgba(37,99,235,.25);
 }
-
 .mh-grid {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   pointer-events: none;
   opacity: 0;
   transition: opacity .2s;
@@ -66,13 +54,10 @@ body.mh-manual-mode .mh-component [contenteditable="true"]:focus {
   background-position: 0 0;
 }
 body.mh-manual-mode .mh-grid { opacity: 1; }
-
 .mh-mode-badge {
-  position: fixed;
-  top: 12px; right: 12px;
+  position: fixed; top: 12px; right: 12px;
   padding: 8px 14px;
-  background: #2563eb;
-  color: #fff;
+  background: #2563eb; color: #fff;
   border-radius: 999px;
   font: 600 12px/1.3 system-ui, sans-serif;
   z-index: 10000;
@@ -81,40 +66,40 @@ body.mh-manual-mode .mh-grid { opacity: 1; }
   max-width: 520px;
 }
 body.mh-manual-mode .mh-mode-badge { display: block; }
-
 .mh-depth-readout {
-  position: absolute;
-  top: -22px; left: 0;
+  position: absolute; top: -22px; left: 0;
   font: 600 11px/1 ui-monospace, Menlo, monospace;
-  color: #2563eb;
-  background: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
+  color: #2563eb; background: #fff;
+  padding: 2px 6px; border-radius: 4px;
   border: 1px solid rgba(37,99,235,.4);
-  pointer-events: none;
-  display: none;
+  pointer-events: none; display: none;
 }
 body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block; }
-
 .mh-hint {
   position: fixed; bottom: 20px; right: 20px;
-  z-index: 10001; font: 13px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
+  z-index: 10001;
+  font: 13px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
 }
 .mh-hint > summary {
   width: 36px; height: 36px;
   background: #2563eb; color: #fff;
-  border-radius: 50%; display: grid; place-items: center;
-  cursor: pointer; font-weight: 700; font-size: 18px;
-  list-style: none; outline: none; user-select: none;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  cursor: pointer;
+  font-weight: 700; font-size: 18px;
+  list-style: none;
   box-shadow: 0 6px 18px rgba(37,99,235,.35);
+  user-select: none; outline: none;
 }
 .mh-hint > summary::-webkit-details-marker { display: none; }
 .mh-hint > summary::marker { display: none; }
 .mh-hint[open] > summary { border-radius: 50% 50% 8px 50%; }
 .mh-hint-body {
   position: absolute; bottom: 48px; right: 0;
-  background: #fff; padding: 14px 18px;
-  border-radius: 12px; border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
   box-shadow: 0 20px 40px -16px rgba(0,0,0,.25);
   width: 280px; color: #111;
 }
@@ -123,153 +108,192 @@ body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block
 .mh-hint-body li { margin: 5px 0; color: #374151; }
 .mh-hint-body kbd {
   font: 600 11px/1 ui-monospace, Menlo, monospace;
-  padding: 2px 6px; background: #1f2937; color: #fff;
-  border-radius: 4px; margin: 0 1px;
-}
-/* ==== end ManualHTML boilerplate ==== */
-
-/* ==== Deck styles — widths are multiples of 60 so slides snap clean. ==== */
-body { background: #f1ebdf; }
-
-/* A flex column wrapper centers the initial stack. The wrapper is NOT a
-   component; its children (the slides) are the components. */
-.deck-stack {
-  width: 720px;
-  margin: 60px auto 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 60px;
+  padding: 2px 6px;
+  background: #1f2937; color: #fff;
+  border-radius: 4px;
+  margin: 0 1px;
 }
 
-.slide {
-  width: 720px;               /* 12 grid cells */
-  min-height: 420px;          /* 7 grid cells — grows if content does */
-  padding: 48px 52px;
-  border-radius: 18px;
+/* ---- Deck mode (body.mh-deck): fullscreen slideshow by default. ---- */
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-stage {
+  position: static;
+  min-height: 0;
+  perspective: none;
+  transform-style: flat;
+}
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-grid { display: none; }
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide {
+  position: fixed !important;
+  inset: 0 !important;
+  left: 0 !important; top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  transform: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   box-sizing: border-box;
-  background: #fff;
-  box-shadow: 0 14px 36px -22px rgba(0,0,0,.32);
-  display: flex;
+  display: none !important;
+  z-index: 5000;
+  padding: 60px 120px;
+}
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide.mh-current {
+  display: flex !important;
   flex-direction: column;
-  color: #2a1c12;
-  position: relative;           /* so .page-num can be positioned */
+  justify-content: center;
+  align-items: flex-start;
 }
-.slide .eyebrow {
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  font-size: 12px;
-  font-weight: 700;
-  color: #8a6a45;
-  margin: 0 0 16px;
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-resize-handle,
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-depth-readout {
+  display: none !important;
 }
-.slide h1 { font-size: 44px; line-height: 1.05; margin: 0 0 14px; letter-spacing: -.01em; }
-.slide h2 { font-size: 32px; line-height: 1.1;  margin: 0 0 16px; letter-spacing: -.005em; }
-.slide p  { font-size: 18px; line-height: 1.5;  margin: 0 0 12px; color: #4a3828; max-width: 48ch; }
-.slide ul { margin: 4px 0 0 0; padding: 0 0 0 20px; color: #4a3828; font-size: 17px; }
-.slide ul li { margin: 6px 0; }
-.slide .page-num {
-  position: absolute;
-  right: 28px; bottom: 24px;
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) { cursor: pointer; }
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) [contenteditable],
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) a,
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) button,
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-hint { cursor: auto; }
+.mh-deck-counter {
+  position: fixed; bottom: 20px; left: 20px;
+  padding: 6px 12px;
+  background: rgba(17,24,39,.72); color: #fff;
+  border-radius: 999px;
   font: 600 12px/1 ui-monospace, Menlo, monospace;
-  color: #8a6a45;
+  z-index: 10002;
+  display: none;
+  pointer-events: none;
 }
-.slide.title {
-  background: linear-gradient(135deg, #2a1c12 0%, #4a3120 100%);
-  color: #f3e9da;
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-deck-counter { display: block; }
+/* ==== end boilerplate ==== */
+
+/* ---------- Page styles: deck ---------- */
+body { background: #0b1220; color: #e5e7eb; }
+.mh-stage { width: 1080px; margin: 0 auto; padding: 60px 60px 180px; }
+
+.mh-slide {
+  width: 900px;
+  margin-bottom: 60px;
+  padding: 48px 60px;
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  color: #e5e7eb;
+  box-shadow: 0 20px 60px -20px rgba(0,0,0,.6);
 }
-.slide.title .eyebrow { color: #c7b79c; }
-.slide.title h1 { color: #f6ecd7; font-size: 56px; }
-.slide.title p  { color: #d8c4a2; font-size: 20px; }
-.slide.accent { background: #ead9bd; }
-.slide.dark   { background: #2a1c12; color: #f3e9da; }
-.slide.dark .eyebrow { color: #c7b79c; }
-.slide.dark h2 { color: #f6ecd7; }
-.slide.dark p, .slide.dark ul { color: #d8c4a2; }
+.mh-slide .eyebrow { font: 600 12px/1 ui-monospace, Menlo, monospace; letter-spacing: .25em; text-transform: uppercase; color: #60a5fa; margin: 0 0 20px; }
+.mh-slide h1 { font: 700 56px/1.05 ui-serif, Georgia, serif; margin: 0 0 20px; letter-spacing: -.02em; color: #f9fafb; }
+.mh-slide h2 { font: 700 40px/1.1 ui-serif, Georgia, serif; margin: 0 0 20px; letter-spacing: -.02em; color: #f9fafb; }
+.mh-slide p  { font-size: 22px; line-height: 1.55; margin: 0 0 16px; color: #cbd5e1; }
+.mh-slide ul { margin: 16px 0; padding-left: 28px; }
+.mh-slide li { font-size: 21px; line-height: 1.55; margin: 10px 0; color: #cbd5e1; }
+.mh-slide .tag { font-size: 18px; color: #94a3b8; }
+.mh-slide strong { color: #f9fafb; }
+.mh-slide .big { font: 700 96px/1 ui-serif, Georgia, serif; letter-spacing: -.04em; color: #60a5fa; margin: 10px 0; }
+.mh-slide .cta-btn { display: inline-block; margin-top: 24px; padding: 16px 28px; background: #2563eb; color: #fff; border: 0; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
+
+/* Title slide variant */
+.mh-slide.title { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 70%); border-color: #1e40af; }
+
+/* Two-column slide */
+.mh-slide .cols { display: flex; gap: 48px; width: 100%; align-items: flex-start; margin-top: 20px; }
+.mh-slide .cols > div { flex: 1; }
+
+/* Code-style callout */
+.mh-slide code {
+  font: 600 18px/1.4 ui-monospace, Menlo, monospace;
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: #93c5fd;
+}
 </style>
 </head>
-<body>
+<body class="mh-deck">
+  <div class="mh-stage">
+    <div class="mh-grid" aria-hidden="true"></div>
+    <div class="mh-mode-badge">Manual Mode · slides unfolded on the grid</div>
 
-<div class="mh-stage">
-  <div class="mh-grid" aria-hidden="true"></div>
-  <div class="mh-mode-badge">Manual Mode</div>
+    <section class="mh-component mh-slide title">
+      <p class="eyebrow">A convention for Claude Code</p>
+      <h1>ManualHTML</h1>
+      <p>Every page, every deck, every dashboard — on a 3D grid. Editable in place. Keyboard-quick to rearrange.</p>
+      <p class="tag">Press <strong>→</strong> or click to begin.</p>
+    </section>
 
-  <div class="deck-stack">
-    <article class="mh-component slide title">
-      <p class="eyebrow">A five-minute story</p>
-      <h1>Meridian Coffee</h1>
-      <p>Small-batch roastery on Lamplight Ave.</p>
-      <p class="page-num">1 / 5</p>
-    </article>
-
-    <article class="mh-component slide">
-      <p class="eyebrow">The beans</p>
-      <h2>We source from one farm at a time.</h2>
-      <p>Every Monday, a new single-origin arrives green. We taste it, roast three sample profiles, and pick the one that best shows what that farm did right this season.</p>
+    <section class="mh-component mh-slide">
+      <p class="eyebrow">The idea</p>
+      <h2>Generated UI should be rearrangeable.</h2>
+      <p>Claude Code already produces HTML in one shot. ManualHTML adds a second step: the user can nudge things into place without reopening the editor.</p>
       <ul>
-        <li>Direct relationships with twelve farms across four countries.</li>
-        <li>One origin on the bar per week, never blended.</li>
-        <li>Lot codes printed on every bag so you can trace the cup back.</li>
+        <li><strong>Every block</strong> is a component on a 60px grid.</li>
+        <li><strong>Press <code>M</code></strong> — grid appears, drag to move, corner handle to scale.</li>
+        <li><strong>Click any text</strong> to edit it live.</li>
       </ul>
-      <p class="page-num">2 / 5</p>
-    </article>
+    </section>
 
-    <article class="mh-component slide accent">
-      <p class="eyebrow">The roast</p>
-      <h2>Light enough to taste the farm.</h2>
-      <p>We roast in a 2kg Probat with a 14–16 minute profile. Development time is short, the drop temperature is low. You get fruit and acidity, not char.</p>
-      <p class="page-num">3 / 5</p>
-    </article>
+    <section class="mh-component mh-slide">
+      <p class="eyebrow">A 3D grid</p>
+      <h2>X, Y, and Z.</h2>
+      <div class="cols">
+        <div>
+          <p><strong>X / Y</strong> — position, snapped to 60px.</p>
+          <p><strong>Scale</strong> — corner handle, also snapped to 60px.</p>
+          <p><strong>Z</strong> — <code>↑</code>/<code>↓</code> change depth in 20px steps. Layer things.</p>
+        </div>
+        <div>
+          <p><strong>Bottom</strong> — every component's bottom edge snaps to the next grid line. Cards, heroes, slides all align vertically.</p>
+          <p><strong>Edit</strong> — click text to edit. Links and buttons don't navigate in Manual Mode so you can fix their labels.</p>
+        </div>
+      </div>
+    </section>
 
-    <article class="mh-component slide dark">
-      <p class="eyebrow">The brew</p>
-      <h2>Four ways to drink it.</h2>
+    <section class="mh-component mh-slide">
+      <p class="eyebrow">For decks specifically</p>
+      <h2>This is a deck.</h2>
+      <p>A deck is just a page with <code>body class="mh-deck"</code>. The default view becomes a fullscreen slideshow — one slide fills the viewport, click or <code>→</code> advances, <code>←</code> goes back.</p>
+      <p>Press <code>M</code> and all the slides unfold onto the grid. Drag them, scale them, edit their text — then press <code>M</code> again and the slideshow resumes with your changes.</p>
+    </section>
+
+    <section class="mh-component mh-slide">
+      <p class="eyebrow">Authoring model</p>
+      <h2>One spec. Any prompt.</h2>
+      <p>MANUAL.md is the convention — it defines the grid, the keyboard model, and the boilerplate CSS and JS. It has no content of its own.</p>
+      <p>Your prompt ("a bakery landing page," "a pitch deck for Lumen Notes") is separate. Claude applies the convention to your prompt.</p>
+      <p class="tag">Paste MANUAL.md into your project's CLAUDE.md and ask for whatever you want.</p>
+    </section>
+
+    <section class="mh-component mh-slide">
+      <p class="eyebrow">End</p>
+      <h2>Press <code>M</code>.</h2>
+      <p>See these six slides unfold onto the grid. Drag them into whatever order feels right. Scale one bigger. Edit a heading. Press <code>M</code> again — the slideshow resumes with your changes.</p>
+      <button class="cta-btn">Try it</button>
+    </section>
+  </div>
+
+  <details class="mh-hint" aria-label="Shortcuts">
+    <summary>?</summary>
+    <div class="mh-hint-body">
+      <strong>Shortcuts</strong>
       <ul>
-        <li><strong>Batch drip</strong> — the cleanest expression, brewed at 1:17.</li>
-        <li><strong>Pourover</strong> — V60, 22 grams, 360 grams of water, 3:30 total.</li>
-        <li><strong>Espresso</strong> — 20 in, 45 out, 28 seconds.</li>
-        <li><strong>Cold brew</strong> — 18 hours at 4°C, cut with still water.</li>
+        <li><kbd>→</kbd>/<kbd>←</kbd> or <kbd>click</kbd> navigate</li>
+        <li><kbd>M</kbd> toggle Manual Mode</li>
+        <li>Drag to move · corner handle to scale</li>
+        <li><kbd>↑</kbd>/<kbd>↓</kbd> change depth</li>
+        <li>Click text to edit</li>
       </ul>
-      <p class="page-num">4 / 5</p>
-    </article>
-
-    <article class="mh-component slide">
-      <p class="eyebrow">Visit us</p>
-      <h2>114 Lamplight Ave. 7–4 daily.</h2>
-      <p>Open seven to four, every day of the week. Beans to take home, a bar to sit at, and one rotating single-origin brewed four ways.</p>
-      <p>We close for the farm trip the second week of March. The rest of the year, see you at the counter.</p>
-      <p class="page-num">5 / 5</p>
-    </article>
-  </div>
-</div>
-
-<details class="mh-hint" aria-label="Shortcuts">
-  <summary>?</summary>
-  <div class="mh-hint-body">
-    <strong>Shortcuts</strong>
-    <ul>
-      <li><kbd>M</kbd> toggle Manual Mode</li>
-      <li>Drag to move — snaps to 60px grid</li>
-      <li>Corner handle to scale — snaps to grid</li>
-      <li><kbd>↑</kbd>/<kbd>↓</kbd> change depth of selected</li>
-      <li>Click text to edit in place</li>
-    </ul>
-  </div>
-</details>
+    </div>
+  </details>
 
 <script>
-/* ==== ManualHTML boilerplate (do not modify) ==== */
+/* ==== ManualHTML boilerplate ==== */
 document.addEventListener('DOMContentLoaded', function () {
-  const GRID = 60;
-  const Z_STEP = 20;
-  const DRAG_THRESHOLD = 4;
+  const GRID = 60, Z_STEP = 20, DRAG_THRESHOLD = 4;
   const snap = v => Math.round(v / GRID) * GRID;
   const snapUp = v => Math.max(GRID, Math.ceil(v / GRID) * GRID);
 
   const stage = document.querySelector('.mh-stage');
   if (!stage) return;
-  let manualMode = false;
-  let selected = null;
-  let pending = null;
+  let manualMode = false, selected = null, pending = null;
 
   const getS = el => ({
     x: parseFloat(el.dataset.mhX || '0'),
@@ -305,13 +329,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!el.style.width) el.style.width = r.width + 'px';
     snapHeight(el);
     setS(el, getS(el));
-    const h = document.createElement('div');
-    h.className = 'mh-resize-handle';
-    el.appendChild(h);
-    const d = document.createElement('div');
-    d.className = 'mh-depth-readout';
-    d.textContent = 'z: 0  ·  scale: 1.00';
-    el.appendChild(d);
+    const h = document.createElement('div'); h.className = 'mh-resize-handle'; el.appendChild(h);
+    const d = document.createElement('div'); d.className = 'mh-depth-readout';
+    d.textContent = 'z: 0  ·  scale: 1.00'; el.appendChild(d);
   });
 
   const recomputeStageHeight = () => {
@@ -338,8 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const isMhHelper = el => el.classList && (
-    el.classList.contains('mh-resize-handle') ||
-    el.classList.contains('mh-depth-readout')
+    el.classList.contains('mh-resize-handle') || el.classList.contains('mh-depth-readout')
   );
   const walkEditables = (root, cb) => {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
@@ -351,8 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return NodeFilter.FILTER_SKIP;
       },
     });
-    let n;
-    while ((n = walker.nextNode())) cb(n);
+    let n; while ((n = walker.nextNode())) cb(n);
   };
   const setEditable = on => {
     comps.forEach(c => walkEditables(c, el => {
@@ -360,6 +378,24 @@ document.addEventListener('DOMContentLoaded', function () {
       else el.removeAttribute('contenteditable');
     }));
   };
+
+  const isDeck = document.body.classList.contains('mh-deck');
+  const slides = isDeck ? comps.filter(c => c.classList.contains('mh-slide')) : [];
+  let current = 0;
+  let deckCounter = null;
+  const showSlide = (idx) => {
+    if (!slides.length) return;
+    current = ((idx % slides.length) + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('mh-current', i === current));
+    if (deckCounter) deckCounter.textContent = (current + 1) + ' / ' + slides.length;
+  };
+  if (isDeck && slides.length) {
+    deckCounter = document.createElement('div');
+    deckCounter.className = 'mh-deck-counter';
+    document.body.appendChild(deckCounter);
+    showSlide(0);
+    requestAnimationFrame(() => document.body.classList.add('mh-deck-ready'));
+  }
 
   document.addEventListener('keydown', (e) => {
     const tag = (e.target.tagName || '').toLowerCase();
@@ -369,10 +405,16 @@ document.addEventListener('DOMContentLoaded', function () {
       manualMode = !manualMode;
       document.body.classList.toggle('mh-manual-mode', manualMode);
       setEditable(manualMode);
-      if (!manualMode && document.activeElement && document.activeElement.blur) {
-        document.activeElement.blur();
-      }
+      if (!manualMode && document.activeElement && document.activeElement.blur) document.activeElement.blur();
       return;
+    }
+    if (isDeck && !manualMode) {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        showSlide(current + 1); e.preventDefault(); return;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        showSlide(current - 1); e.preventDefault(); return;
+      }
     }
     if (!manualMode || !selected) return;
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
@@ -403,17 +445,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener('pointermove', (e) => {
     if (!pending) return;
-    const dx = e.clientX - pending.sx;
-    const dy = e.clientY - pending.sy;
+    const dx = e.clientX - pending.sx, dy = e.clientY - pending.sy;
     if (!pending.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
       pending.active = true;
       if (selected && selected !== pending.el) selected.classList.remove('mh-selected');
       selected = pending.el;
       selected.classList.add('mh-selected');
       try { pending.el.setPointerCapture(pending.pid); } catch {}
-      if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) {
-        document.activeElement.blur();
-      }
+      if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) document.activeElement.blur();
       const sel = window.getSelection && window.getSelection();
       if (sel && sel.removeAllRanges) sel.removeAllRanges();
     }
@@ -423,8 +462,6 @@ document.addEventListener('DOMContentLoaded', function () {
       s.x = snap(pending.start.x + dx);
       s.y = snap(pending.start.y + dy);
     } else {
-      // Scale, then snap the resulting displayed width to a multiple of GRID
-      // so a scaled component still lines up with the grid.
       const factor = 1 + (dx + dy) / 220;
       let ns = Math.max(0.2, Math.min(6, pending.start.s * factor));
       const iw = pending.el.offsetWidth;
@@ -438,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
   });
 
-  const endDrag = (e) => {
+  const endDrag = () => {
     if (!pending) return;
     if (!pending.active) {
       if (selected && selected !== pending.el) selected.classList.remove('mh-selected');
@@ -452,14 +489,19 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('pointercancel', endDrag);
 
   document.addEventListener('click', (e) => {
-    if (!manualMode) return;
-    const target = e.target.closest('a, button, input[type="submit"], input[type="button"]');
-    if (target && target.closest('.mh-component')) {
-      e.preventDefault();
+    if (manualMode) {
+      const t = e.target.closest('a, button, input[type="submit"], input[type="button"]');
+      if (t && t.closest('.mh-component')) e.preventDefault();
+      return;
+    }
+    if (isDeck && document.body.classList.contains('mh-deck-ready')) {
+      const t = e.target;
+      if (t.closest('.mh-hint, a, button, input, textarea, [contenteditable]')) return;
+      showSlide(current + 1);
     }
   }, true);
 });
-/* ==== end ManualHTML boilerplate ==== */
+/* ==== end boilerplate ==== */
 </script>
 </body>
 </html>

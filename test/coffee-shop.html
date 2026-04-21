@@ -2,23 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meridian Coffee — ManualHTML test</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meridian Coffee — a ManualHTML example</title>
 <style>
-/* ==== ManualHTML boilerplate (do not modify) ==== */
+/* ==== ManualHTML boilerplate ==== */
 html, body { margin: 0; padding: 0; }
 body { font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background: #f7f7f8; color: #111; }
-
 .mh-stage {
   position: relative;
   perspective: 1600px;
   transform-style: preserve-3d;
   min-height: 100vh;
 }
-
 .mh-component {
-  /* Start in flow so measurement reflects intended layout; JS swaps to absolute after. */
   position: relative;
   transform-style: preserve-3d;
   transform-origin: top left;
@@ -28,21 +24,15 @@ body { font: 16px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background
   height: auto;
   box-sizing: border-box;
 }
-
 .mh-resize-handle {
-  position: absolute;
-  right: -7px; bottom: -7px;
+  position: absolute; right: -7px; bottom: -7px;
   width: 14px; height: 14px;
-  background: #2563eb;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  cursor: nwse-resize;
-  display: none;
-  z-index: 5;
+  background: #2563eb; border: 2px solid #fff; border-radius: 50%;
+  cursor: nwse-resize; display: none; z-index: 5;
   box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
 body.mh-manual-mode .mh-resize-handle { display: block; }
-body.mh-manual-mode .mh-component { outline: 1px dashed rgba(37, 99, 235, .55); cursor: grab; }
+body.mh-manual-mode .mh-component { outline: 1px dashed rgba(37,99,235,.55); cursor: grab; }
 body.mh-manual-mode .mh-component.mh-selected { outline: 2px solid #2563eb; }
 body.mh-manual-mode .mh-component:active { cursor: grabbing; }
 body.mh-manual-mode .mh-component [contenteditable="true"] { cursor: text; outline: none; }
@@ -51,10 +41,8 @@ body.mh-manual-mode .mh-component [contenteditable="true"]:focus {
   border-radius: 3px;
   box-shadow: 0 0 0 2px rgba(37,99,235,.25);
 }
-
 .mh-grid {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   pointer-events: none;
   opacity: 0;
   transition: opacity .2s;
@@ -66,13 +54,10 @@ body.mh-manual-mode .mh-component [contenteditable="true"]:focus {
   background-position: 0 0;
 }
 body.mh-manual-mode .mh-grid { opacity: 1; }
-
 .mh-mode-badge {
-  position: fixed;
-  top: 12px; right: 12px;
+  position: fixed; top: 12px; right: 12px;
   padding: 8px 14px;
-  background: #2563eb;
-  color: #fff;
+  background: #2563eb; color: #fff;
   border-radius: 999px;
   font: 600 12px/1.3 system-ui, sans-serif;
   z-index: 10000;
@@ -81,40 +66,40 @@ body.mh-manual-mode .mh-grid { opacity: 1; }
   max-width: 520px;
 }
 body.mh-manual-mode .mh-mode-badge { display: block; }
-
 .mh-depth-readout {
-  position: absolute;
-  top: -22px; left: 0;
+  position: absolute; top: -22px; left: 0;
   font: 600 11px/1 ui-monospace, Menlo, monospace;
-  color: #2563eb;
-  background: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
+  color: #2563eb; background: #fff;
+  padding: 2px 6px; border-radius: 4px;
   border: 1px solid rgba(37,99,235,.4);
-  pointer-events: none;
-  display: none;
+  pointer-events: none; display: none;
 }
 body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block; }
-
 .mh-hint {
   position: fixed; bottom: 20px; right: 20px;
-  z-index: 10001; font: 13px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
+  z-index: 10001;
+  font: 13px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
 }
 .mh-hint > summary {
   width: 36px; height: 36px;
   background: #2563eb; color: #fff;
-  border-radius: 50%; display: grid; place-items: center;
-  cursor: pointer; font-weight: 700; font-size: 18px;
-  list-style: none; outline: none; user-select: none;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  cursor: pointer;
+  font-weight: 700; font-size: 18px;
+  list-style: none;
   box-shadow: 0 6px 18px rgba(37,99,235,.35);
+  user-select: none; outline: none;
 }
 .mh-hint > summary::-webkit-details-marker { display: none; }
 .mh-hint > summary::marker { display: none; }
 .mh-hint[open] > summary { border-radius: 50% 50% 8px 50%; }
 .mh-hint-body {
   position: absolute; bottom: 48px; right: 0;
-  background: #fff; padding: 14px 18px;
-  border-radius: 12px; border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
   box-shadow: 0 20px 40px -16px rgba(0,0,0,.25);
   width: 280px; color: #111;
 }
@@ -123,175 +108,395 @@ body.mh-manual-mode .mh-component.mh-selected .mh-depth-readout { display: block
 .mh-hint-body li { margin: 5px 0; color: #374151; }
 .mh-hint-body kbd {
   font: 600 11px/1 ui-monospace, Menlo, monospace;
-  padding: 2px 6px; background: #1f2937; color: #fff;
-  border-radius: 4px; margin: 0 1px;
+  padding: 2px 6px;
+  background: #1f2937; color: #fff;
+  border-radius: 4px;
+  margin: 0 1px;
 }
-/* ==== end ManualHTML boilerplate ==== */
 
-/* ==== Page styles — widths and spacings are multiples of 60 so the initial
-       layout lands on grid intersections. ==== */
-body { background: #fbf7f1; color: #2a1c12; }
-
-.brand {
-  width: 840px;
-  padding: 24px 36px;
-  background: #2a1c12;
-  color: #f3e9da;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin: 60px auto 60px;
-  box-shadow: 0 18px 40px -22px rgba(0,0,0,.45);
+/* ---- Deck mode (body.mh-deck): fullscreen slideshow by default. ---- */
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-stage {
+  position: static;
+  min-height: 0;
+  perspective: none;
+  transform-style: flat;
+}
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-grid { display: none; }
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide {
+  position: fixed !important;
+  inset: 0 !important;
+  left: 0 !important; top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  transform: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   box-sizing: border-box;
+  display: none !important;
+  z-index: 5000;
+  padding: 60px 120px;
 }
-.brand .logo {
-  width: 44px; height: 44px;
-  background: #c88a3c; color: #2a1c12;
-  border-radius: 50%;
-  display: grid; place-items: center;
-  font-weight: 800; font-size: 20px;
-  flex-shrink: 0;
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide.mh-current {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }
-.brand .brand-text { flex: 1; }
-.brand h1 { margin: 0; font-size: 22px; letter-spacing: .02em; }
-.brand p  { margin: 2px 0 0; font-size: 13px; color: #c7b79c; }
-.brand nav { display: flex; gap: 22px; font-size: 14px; }
-.brand nav a { color: #e6d5b6; text-decoration: none; }
-
-.hero {
-  width: 840px;
-  padding: 48px 40px;
-  background: linear-gradient(135deg, #ead9bd, #f6ecd7);
-  border-radius: 18px;
-  margin: 0 auto 60px;
-  box-sizing: border-box;
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-resize-handle,
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-slide .mh-depth-readout {
+  display: none !important;
 }
-.hero h2 { margin: 0 0 12px; font-size: 34px; line-height: 1.15; color: #2a1c12; }
-.hero p  { margin: 0 0 24px; font-size: 16px; color: #5c4a37; max-width: 60ch; }
-.hero .cta {
-  display: inline-block;
-  padding: 12px 22px;
-  background: #2a1c12; color: #f6ecd7;
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) { cursor: pointer; }
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) [contenteditable],
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) a,
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) button,
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-hint { cursor: auto; }
+.mh-deck-counter {
+  position: fixed; bottom: 20px; left: 20px;
+  padding: 6px 12px;
+  background: rgba(17,24,39,.72); color: #fff;
   border-radius: 999px;
-  font-weight: 600;
-  text-decoration: none;
+  font: 600 12px/1 ui-monospace, Menlo, monospace;
+  z-index: 10002;
+  display: none;
+  pointer-events: none;
 }
+body.mh-deck.mh-deck-ready:not(.mh-manual-mode) .mh-deck-counter { display: block; }
+/* ==== end boilerplate ==== */
 
-/* Cards: 240 wide (4 cells), 60px gap between, 3 cards in a 840 row = 240*3 + 60*2 = 840. */
-.card-row {
-  width: 840px;
-  margin: 0 auto;
+/* ---------- Page styles: Meridian Coffee ---------- */
+body { background: #f3ede3; color: #2b1d14; }
+.mh-stage { width: 1260px; margin: 0 auto; padding: 60px 30px 180px; }
+.row { display: flex; flex-wrap: wrap; gap: 60px; margin-bottom: 60px; }
+
+.nav {
+  width: 1200px;
   display: flex;
-  gap: 60px;
-}
-.card {
-  width: 240px;
-  padding: 24px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px -18px rgba(0,0,0,.25);
-  box-sizing: border-box;
+  border-radius: 60px;
+  box-shadow: 0 4px 20px -8px rgba(0,0,0,.12);
 }
-.card .emoji { font-size: 36px; }
-.card h3 { margin: 10px 0 4px; font-size: 18px; }
-.card .price { font-size: 14px; color: #8a6a45; font-weight: 600; margin-bottom: 8px; }
-.card p { margin: 0; font-size: 14px; color: #594231; }
+.nav .brand { font: 700 22px/1 ui-serif, Georgia, serif; color: #6b3f1d; letter-spacing: -.01em; }
+.nav .links { display: flex; gap: 24px; font-size: 14px; color: #6b5b4a; }
+.nav .links a { color: inherit; text-decoration: none; }
+.nav .order { background: #6b3f1d; color: #fff; padding: 10px 20px; border-radius: 999px; border: 0; font-weight: 600; cursor: pointer; }
+
+.hero-title { width: 720px; padding: 40px 0 0; }
+.hero-title h1 { font: 700 64px/1.05 ui-serif, Georgia, serif; letter-spacing: -.02em; margin: 0 0 16px; color: #3a2414; }
+.hero-title .eyebrow { font: 600 12px/1 ui-monospace, Menlo, monospace; text-transform: uppercase; letter-spacing: .2em; color: #8c6b50; margin: 0 0 20px; }
+
+.hero-sub { width: 540px; padding-top: 60px; }
+.hero-sub p { font-size: 19px; line-height: 1.55; color: #5c4432; margin: 0; }
+
+.hero-cta { width: 300px; padding: 24px 0; }
+.hero-cta button { width: 100%; padding: 18px 24px; font-size: 16px; font-weight: 600; background: #6b3f1d; color: #fff; border: 0; border-radius: 12px; cursor: pointer; }
+.hero-cta .note { margin: 12px 0 0; font-size: 13px; color: #8c6b50; text-align: center; }
+
+.stat {
+  width: 240px;
+  padding: 32px 24px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px -4px rgba(0,0,0,.08);
+}
+.stat .num { font: 700 44px/1 ui-serif, Georgia, serif; color: #6b3f1d; letter-spacing: -.02em; }
+.stat .label { font-size: 13px; color: #8c6b50; margin-top: 8px; text-transform: uppercase; letter-spacing: .1em; }
+
+.section-head { width: 720px; padding: 40px 0 20px; }
+.section-head h2 { font: 700 36px/1.1 ui-serif, Georgia, serif; margin: 0 0 8px; color: #3a2414; }
+.section-head p { margin: 0; color: #6b5b4a; font-size: 16px; }
+
+.menu-item {
+  width: 360px;
+  padding: 28px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px -4px rgba(0,0,0,.08);
+}
+.menu-item .emoji { font-size: 36px; line-height: 1; }
+.menu-item h3 { font: 700 22px/1.2 ui-serif, Georgia, serif; margin: 16px 0 8px; color: #3a2414; }
+.menu-item p { margin: 0; color: #6b5b4a; font-size: 14px; }
+.menu-item .price { margin-top: 20px; font: 700 20px/1 ui-serif, Georgia, serif; color: #6b3f1d; }
+
+.quote {
+  width: 360px;
+  padding: 28px;
+  background: #fffaf2;
+  border: 1px solid #e8dcc8;
+  border-radius: 20px;
+}
+.quote blockquote { margin: 0 0 16px; font: italic 17px/1.5 ui-serif, Georgia, serif; color: #3a2414; }
+.quote .who { font-size: 13px; color: #8c6b50; }
+.quote .who strong { color: #3a2414; font-weight: 600; }
+
+.price-card {
+  width: 480px;
+  padding: 36px;
+  background: #fff;
+  border-radius: 24px;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 16px -6px rgba(0,0,0,.1);
+}
+.price-card.featured { border-color: #6b3f1d; background: #2b1d14; color: #f3ede3; }
+.price-card h3 { margin: 0 0 6px; font: 700 24px/1 ui-serif, Georgia, serif; }
+.price-card .amount { font: 700 42px/1 ui-serif, Georgia, serif; margin: 16px 0; letter-spacing: -.02em; }
+.price-card .amount .per { font-size: 16px; color: #8c6b50; font-weight: 400; }
+.price-card.featured .amount .per { color: #c2a88a; }
+.price-card ul { margin: 20px 0; padding-left: 20px; }
+.price-card li { margin: 8px 0; font-size: 15px; }
+.price-card button { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 10px; border: 0; cursor: pointer; background: #6b3f1d; color: #fff; }
+.price-card.featured button { background: #f3ede3; color: #2b1d14; }
+
+.newsletter {
+  width: 720px;
+  padding: 36px 40px;
+  background: linear-gradient(135deg, #6b3f1d 0%, #3a2414 100%);
+  color: #f3ede3;
+  border-radius: 24px;
+}
+.newsletter h3 { margin: 0 0 8px; font: 700 28px/1.1 ui-serif, Georgia, serif; }
+.newsletter p { margin: 0 0 20px; color: #e8d8c4; font-size: 15px; }
+.newsletter .form { display: flex; gap: 12px; }
+.newsletter input { flex: 1; padding: 14px 16px; font-size: 15px; border: 0; border-radius: 10px; background: #fff; color: #2b1d14; }
+.newsletter button { padding: 14px 28px; font-size: 15px; font-weight: 600; background: #f3ede3; color: #2b1d14; border: 0; border-radius: 10px; cursor: pointer; }
+
+.hours {
+  width: 420px;
+  padding: 28px;
+  background: #fff;
+  border-radius: 20px;
+}
+.hours h3 { margin: 0 0 16px; font: 700 18px/1 ui-serif, Georgia, serif; color: #3a2414; }
+.hours dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 20px; }
+.hours dt { color: #8c6b50; font-size: 14px; }
+.hours dd { margin: 0; color: #3a2414; font-size: 14px; font-weight: 500; }
+
+.contact {
+  width: 360px;
+  padding: 28px;
+  background: #fff;
+  border-radius: 20px;
+}
+.contact h3 { margin: 0 0 16px; font: 700 18px/1 ui-serif, Georgia, serif; color: #3a2414; }
+.contact .line { font-size: 14px; color: #3a2414; margin: 8px 0; }
+.contact .line span { color: #8c6b50; display: inline-block; width: 70px; }
 
 .footer {
-  width: 840px;
-  margin: 60px auto;
-  padding: 18px 24px;
+  width: 1200px;
+  padding: 24px 32px;
+  color: #8c6b50;
   font-size: 13px;
-  color: #7b6550;
-  background: #f3e9da;
-  border-radius: 12px;
-  text-align: center;
-  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+.footer a { color: #6b3f1d; text-decoration: none; }
 </style>
 </head>
 <body>
+  <div class="mh-stage">
+    <div class="mh-grid" aria-hidden="true"></div>
+    <div class="mh-mode-badge">Manual Mode · drag, scale, edit</div>
 
-<div class="mh-stage">
-  <div class="mh-grid" aria-hidden="true"></div>
-  <div class="mh-mode-badge">Manual Mode</div>
+    <div class="row"><header class="mh-component nav">
+      <div class="brand">Meridian Coffee</div>
+      <nav class="links">
+        <a href="#menu">Menu</a>
+        <a href="#story">Story</a>
+        <a href="#visit">Visit</a>
+        <a href="#beans">Beans</a>
+      </nav>
+      <button class="order">Order online</button>
+    </header></div>
 
-  <header class="mh-component brand">
-    <div class="logo">M</div>
-    <div class="brand-text">
-      <h1>Meridian Coffee</h1>
-      <p>Small-batch roastery · open 7–4 daily</p>
+    <div class="row">
+      <section class="mh-component hero-title">
+        <p class="eyebrow">Est. 2019 · Lamplight Ave</p>
+        <h1>Slow coffee,<br>lit by lamplight.</h1>
+      </section>
+      <aside class="mh-component hero-sub">
+        <p>We roast a small batch every Monday and serve it through Saturday. On Sunday we rest — and so does the grinder. You'll find us in the old bookbindery, two blocks east of the river.</p>
+      </aside>
+      <aside class="mh-component hero-cta">
+        <button>See this week's pour</button>
+        <p class="note">No app. No rewards. Just coffee.</p>
+      </aside>
     </div>
-    <nav>
-      <a href="#">Menu</a>
-      <a href="#">Beans</a>
-      <a href="#">Visit</a>
-    </nav>
-  </header>
 
-  <section class="mh-component hero">
-    <h2>Coffee worth the walk.</h2>
-    <p>We roast a rotating single-origin every Monday and serve it pulled, poured, or steeped until Friday evening. Whatever you drink, it left the roaster less than seven days ago.</p>
-    <a class="cta" href="#">See today's menu →</a>
-  </section>
+    <div class="row">
+      <div class="mh-component stat">
+        <div class="num">7</div>
+        <div class="label">Years on the ave</div>
+      </div>
+      <div class="mh-component stat">
+        <div class="num">12</div>
+        <div class="label">Single-origin lots</div>
+      </div>
+      <div class="mh-component stat">
+        <div class="num">216°F</div>
+        <div class="label">Ideal brew temp</div>
+      </div>
+      <div class="mh-component stat">
+        <div class="num">0</div>
+        <div class="label">Loyalty cards</div>
+      </div>
+    </div>
 
-  <div class="card-row">
-    <article class="mh-component card">
-      <div class="emoji">☕</div>
-      <h3>House Drip</h3>
-      <div class="price">$3.50</div>
-      <p>Our weekly single-origin, brewed in batch. Clean, medium body, and something to notice.</p>
-    </article>
+    <div class="row"><div class="mh-component section-head" id="menu">
+      <h2>What's on the bar this week</h2>
+      <p>Six drinks, all day. Rotating origins. Ask the bar about the single estate.</p>
+    </div></div>
 
-    <article class="mh-component card">
-      <div class="emoji">🥛</div>
-      <h3>Cortado</h3>
-      <div class="price">$4.75</div>
-      <p>Two shots of espresso cut with just enough warm milk to round the edges off.</p>
-    </article>
+    <div class="row">
+      <article class="mh-component menu-item">
+        <div class="emoji">☕</div>
+        <h3>House Drip</h3>
+        <p>Ethiopia Yirgacheffe, bright and floral. Served black or with cream.</p>
+        <div class="price">$3.50</div>
+      </article>
+      <article class="mh-component menu-item">
+        <div class="emoji">🥛</div>
+        <h3>Lamplight Latte</h3>
+        <p>Double shot, oat or whole milk, a whisper of brown sugar.</p>
+        <div class="price">$5.25</div>
+      </article>
+      <article class="mh-component menu-item">
+        <div class="emoji">🍮</div>
+        <h3>Crème Cortado</h3>
+        <p>Equal parts espresso and steamed milk, topped with vanilla cream.</p>
+        <div class="price">$4.75</div>
+      </article>
+    </div>
 
-    <article class="mh-component card">
-      <div class="emoji">🫘</div>
-      <h3>Beans, 250g</h3>
-      <div class="price">$18</div>
-      <p>This week's roast, whole bean or ground to your grinder. Roasted yesterday.</p>
-    </article>
+    <div class="row">
+      <article class="mh-component menu-item">
+        <div class="emoji">❄️</div>
+        <h3>Slow Cold Brew</h3>
+        <p>Steeped twelve hours, served over a single large ice cube.</p>
+        <div class="price">$4.50</div>
+      </article>
+      <article class="mh-component menu-item">
+        <div class="emoji">🍫</div>
+        <h3>Bittersweet Mocha</h3>
+        <p>Local dark chocolate, a double ristretto, whole milk.</p>
+        <div class="price">$5.75</div>
+      </article>
+      <article class="mh-component menu-item">
+        <div class="emoji">🌿</div>
+        <h3>Matcha Light</h3>
+        <p>Ceremonial grade, whisked by hand, served unsweetened.</p>
+        <div class="price">$4.95</div>
+      </article>
+    </div>
+
+    <div class="row"><div class="mh-component section-head">
+      <h2>The regulars say</h2>
+    </div></div>
+
+    <div class="row">
+      <article class="mh-component quote">
+        <blockquote>"Their cortado is the single reason I take the long way to work. I have taken the long way for four years now."</blockquote>
+        <div class="who"><strong>Nina R.</strong> — librarian, three blocks down</div>
+      </article>
+      <article class="mh-component quote">
+        <blockquote>"Calm room, strong coffee, and nobody ever asks for your name. Bliss."</blockquote>
+        <div class="who"><strong>Daniel K.</strong> — writer, regular since 2021</div>
+      </article>
+      <article class="mh-component quote">
+        <blockquote>"I brought my uncle. He asked if they'd marry him. That's all you need to know."</blockquote>
+        <div class="who"><strong>Amélie T.</strong> — first-time visitor</div>
+      </article>
+    </div>
+
+    <div class="row"><div class="mh-component section-head" id="beans">
+      <h2>Take some beans home</h2>
+      <p>We ship the current week's roast anywhere in the city. Subscribe, or pick once.</p>
+    </div></div>
+
+    <div class="row">
+      <article class="mh-component price-card">
+        <h3>Single bag</h3>
+        <div class="amount">$22<span class="per"> / 12oz</span></div>
+        <ul>
+          <li>Roasted Monday, shipped Tuesday</li>
+          <li>Your choice of the current lots</li>
+          <li>Whole bean or ground to order</li>
+        </ul>
+        <button>Pick a bag</button>
+      </article>
+      <article class="mh-component price-card featured">
+        <h3>Weekly subscription</h3>
+        <div class="amount">$18<span class="per"> / bag · weekly</span></div>
+        <ul>
+          <li>Everything in Single bag</li>
+          <li>Rotating origin each week</li>
+          <li>Skip, pause, cancel any time</li>
+          <li>Free delivery within the city</li>
+        </ul>
+        <button>Start a subscription</button>
+      </article>
+    </div>
+
+    <div class="row"><section class="mh-component newsletter">
+      <h3>The Monday Letter</h3>
+      <p>One note each Monday about this week's roast, who grew it, and what we're brewing in the bar. No ads, no affiliate anything.</p>
+      <div class="form">
+        <input type="email" placeholder="you@somewhere.com">
+        <button>Subscribe</button>
+      </div>
+    </section></div>
+
+    <div class="row">
+      <section class="mh-component hours" id="visit">
+        <h3>Hours</h3>
+        <dl>
+          <dt>Mon–Fri</dt><dd>6:30 am — 4 pm</dd>
+          <dt>Saturday</dt><dd>8 am — 3 pm</dd>
+          <dt>Sunday</dt><dd>Closed (grinder rests)</dd>
+        </dl>
+      </section>
+      <section class="mh-component contact">
+        <h3>Find us</h3>
+        <div class="line"><span>Address</span> 114 Lamplight Ave</div>
+        <div class="line"><span>Email</span> hello@meridian.coffee</div>
+        <div class="line"><span>Instagram</span> @meridian.coffee</div>
+      </section>
+    </div>
+
+    <div class="row"><footer class="mh-component footer">
+      <div>© 2026 Meridian Coffee · 114 Lamplight Ave · hello@meridian.coffee</div>
+      <div><a href="#top">Back to top ↑</a></div>
+    </footer></div>
   </div>
 
-  <footer class="mh-component footer">
-    © 2026 Meridian Coffee · 114 Lamplight Ave · hello@meridian.coffee
-  </footer>
-</div>
-
-<details class="mh-hint" aria-label="Shortcuts">
-  <summary>?</summary>
-  <div class="mh-hint-body">
-    <strong>Shortcuts</strong>
-    <ul>
-      <li><kbd>M</kbd> toggle Manual Mode</li>
-      <li>Drag to move — snaps to 60px grid</li>
-      <li>Corner handle to scale — snaps to grid</li>
-      <li><kbd>↑</kbd>/<kbd>↓</kbd> change depth of selected</li>
-      <li>Click text to edit in place</li>
-    </ul>
-  </div>
-</details>
+  <details class="mh-hint" aria-label="Shortcuts">
+    <summary>?</summary>
+    <div class="mh-hint-body">
+      <strong>Shortcuts</strong>
+      <ul>
+        <li><kbd>M</kbd> toggle Manual Mode</li>
+        <li>Drag any block to move — snaps to 60px grid</li>
+        <li>Corner handle to scale — snaps to grid</li>
+        <li><kbd>↑</kbd>/<kbd>↓</kbd> change depth of selected</li>
+        <li>Click any text to edit in place</li>
+      </ul>
+    </div>
+  </details>
 
 <script>
-/* ==== ManualHTML boilerplate (do not modify) ==== */
+/* ==== ManualHTML boilerplate ==== */
 document.addEventListener('DOMContentLoaded', function () {
-  const GRID = 60;
-  const Z_STEP = 20;
-  const DRAG_THRESHOLD = 4;
+  const GRID = 60, Z_STEP = 20, DRAG_THRESHOLD = 4;
   const snap = v => Math.round(v / GRID) * GRID;
   const snapUp = v => Math.max(GRID, Math.ceil(v / GRID) * GRID);
 
   const stage = document.querySelector('.mh-stage');
   if (!stage) return;
-  let manualMode = false;
-  let selected = null;
-  let pending = null;
+  let manualMode = false, selected = null, pending = null;
 
   const getS = el => ({
     x: parseFloat(el.dataset.mhX || '0'),
@@ -327,13 +532,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!el.style.width) el.style.width = r.width + 'px';
     snapHeight(el);
     setS(el, getS(el));
-    const h = document.createElement('div');
-    h.className = 'mh-resize-handle';
-    el.appendChild(h);
-    const d = document.createElement('div');
-    d.className = 'mh-depth-readout';
-    d.textContent = 'z: 0  ·  scale: 1.00';
-    el.appendChild(d);
+    const h = document.createElement('div'); h.className = 'mh-resize-handle'; el.appendChild(h);
+    const d = document.createElement('div'); d.className = 'mh-depth-readout';
+    d.textContent = 'z: 0  ·  scale: 1.00'; el.appendChild(d);
   });
 
   const recomputeStageHeight = () => {
@@ -360,8 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const isMhHelper = el => el.classList && (
-    el.classList.contains('mh-resize-handle') ||
-    el.classList.contains('mh-depth-readout')
+    el.classList.contains('mh-resize-handle') || el.classList.contains('mh-depth-readout')
   );
   const walkEditables = (root, cb) => {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
@@ -373,8 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return NodeFilter.FILTER_SKIP;
       },
     });
-    let n;
-    while ((n = walker.nextNode())) cb(n);
+    let n; while ((n = walker.nextNode())) cb(n);
   };
   const setEditable = on => {
     comps.forEach(c => walkEditables(c, el => {
@@ -382,6 +581,24 @@ document.addEventListener('DOMContentLoaded', function () {
       else el.removeAttribute('contenteditable');
     }));
   };
+
+  const isDeck = document.body.classList.contains('mh-deck');
+  const slides = isDeck ? comps.filter(c => c.classList.contains('mh-slide')) : [];
+  let current = 0;
+  let deckCounter = null;
+  const showSlide = (idx) => {
+    if (!slides.length) return;
+    current = ((idx % slides.length) + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('mh-current', i === current));
+    if (deckCounter) deckCounter.textContent = (current + 1) + ' / ' + slides.length;
+  };
+  if (isDeck && slides.length) {
+    deckCounter = document.createElement('div');
+    deckCounter.className = 'mh-deck-counter';
+    document.body.appendChild(deckCounter);
+    showSlide(0);
+    requestAnimationFrame(() => document.body.classList.add('mh-deck-ready'));
+  }
 
   document.addEventListener('keydown', (e) => {
     const tag = (e.target.tagName || '').toLowerCase();
@@ -391,10 +608,16 @@ document.addEventListener('DOMContentLoaded', function () {
       manualMode = !manualMode;
       document.body.classList.toggle('mh-manual-mode', manualMode);
       setEditable(manualMode);
-      if (!manualMode && document.activeElement && document.activeElement.blur) {
-        document.activeElement.blur();
-      }
+      if (!manualMode && document.activeElement && document.activeElement.blur) document.activeElement.blur();
       return;
+    }
+    if (isDeck && !manualMode) {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        showSlide(current + 1); e.preventDefault(); return;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        showSlide(current - 1); e.preventDefault(); return;
+      }
     }
     if (!manualMode || !selected) return;
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
@@ -425,17 +648,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener('pointermove', (e) => {
     if (!pending) return;
-    const dx = e.clientX - pending.sx;
-    const dy = e.clientY - pending.sy;
+    const dx = e.clientX - pending.sx, dy = e.clientY - pending.sy;
     if (!pending.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
       pending.active = true;
       if (selected && selected !== pending.el) selected.classList.remove('mh-selected');
       selected = pending.el;
       selected.classList.add('mh-selected');
       try { pending.el.setPointerCapture(pending.pid); } catch {}
-      if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) {
-        document.activeElement.blur();
-      }
+      if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) document.activeElement.blur();
       const sel = window.getSelection && window.getSelection();
       if (sel && sel.removeAllRanges) sel.removeAllRanges();
     }
@@ -445,8 +665,6 @@ document.addEventListener('DOMContentLoaded', function () {
       s.x = snap(pending.start.x + dx);
       s.y = snap(pending.start.y + dy);
     } else {
-      // Scale, then snap the resulting displayed width to a multiple of GRID
-      // so a scaled component still lines up with the grid.
       const factor = 1 + (dx + dy) / 220;
       let ns = Math.max(0.2, Math.min(6, pending.start.s * factor));
       const iw = pending.el.offsetWidth;
@@ -460,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
   });
 
-  const endDrag = (e) => {
+  const endDrag = () => {
     if (!pending) return;
     if (!pending.active) {
       if (selected && selected !== pending.el) selected.classList.remove('mh-selected');
@@ -474,14 +692,19 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('pointercancel', endDrag);
 
   document.addEventListener('click', (e) => {
-    if (!manualMode) return;
-    const target = e.target.closest('a, button, input[type="submit"], input[type="button"]');
-    if (target && target.closest('.mh-component')) {
-      e.preventDefault();
+    if (manualMode) {
+      const t = e.target.closest('a, button, input[type="submit"], input[type="button"]');
+      if (t && t.closest('.mh-component')) e.preventDefault();
+      return;
+    }
+    if (isDeck && document.body.classList.contains('mh-deck-ready')) {
+      const t = e.target;
+      if (t.closest('.mh-hint, a, button, input, textarea, [contenteditable]')) return;
+      showSlide(current + 1);
     }
   }, true);
 });
-/* ==== end ManualHTML boilerplate ==== */
+/* ==== end boilerplate ==== */
 </script>
 </body>
 </html>
